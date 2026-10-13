@@ -3,45 +3,45 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="VanderClean.App.Views.RegistrarEmpresaPage"
              Title="Cadastro de Empresa"
-             BackgroundColor="#0f172a">
+             BackgroundColor="White">
 
     <ScrollView>
         <VerticalStackLayout Spacing="15" Padding="20">
             <Label Text="Dados da Empresa VanderClean"
                    FontSize="20"
                    FontAttributes="Bold"
-                   TextColor="#38bdf8" />
+                   TextColor="{StaticResource Primary}" />
 
-            <Label Text="Razão Social *" TextColor="#94a3b8" />
-            <Entry x:Name="RazaoSocialEntry" TextColor="White" BackgroundColor="#1e293b" Placeholder="Razão Social" PlaceholderColor="#64748b" />
+            <Label Text="Razão Social *" TextColor="{StaticResource Gray600}" />
+            <Entry x:Name="RazaoSocialEntry" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" Placeholder="Razão Social" PlaceholderColor="{StaticResource Gray500}" />
 
-            <Label Text="Nome Fantasia" TextColor="#94a3b8" />
-            <Entry x:Name="NomeFantasiaEntry" TextColor="White" BackgroundColor="#1e293b" Placeholder="Nome Fantasia" PlaceholderColor="#64748b" />
+            <Label Text="Nome Fantasia" TextColor="{StaticResource Gray600}" />
+            <Entry x:Name="NomeFantasiaEntry" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" Placeholder="Nome Fantasia" PlaceholderColor="{StaticResource Gray500}" />
 
-            <Label Text="CNPJ *" TextColor="#94a3b8" />
-            <Entry x:Name="CnpjEntry" TextColor="White" BackgroundColor="#1e293b" Placeholder="00.000.000/0000-00" PlaceholderColor="#64748b" />
+            <Label Text="CNPJ *" TextColor="{StaticResource Gray600}" />
+            <Entry x:Name="CnpjEntry" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" Placeholder="00.000.000/0000-00" PlaceholderColor="{StaticResource Gray500}" />
 
-            <Label Text="E-mail *" TextColor="#94a3b8" />
-            <Entry x:Name="EmailEntry" TextColor="White" BackgroundColor="#1e293b" Keyboard="Email" Placeholder="contato@empresa.com" PlaceholderColor="#64748b" />
+            <Label Text="E-mail *" TextColor="{StaticResource Gray600}" />
+            <Entry x:Name="EmailEntry" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" Keyboard="Email" Placeholder="contato@empresa.com" PlaceholderColor="{StaticResource Gray500}" />
 
-            <Label Text="Telefone" TextColor="#94a3b8" />
-            <Entry x:Name="TelefoneEntry" TextColor="White" BackgroundColor="#1e293b" Keyboard="Telephone" Placeholder="(00) 00000-0000" PlaceholderColor="#64748b" />
+            <Label Text="Telefone" TextColor="{StaticResource Gray600}" />
+            <Entry x:Name="TelefoneEntry" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" Keyboard="Telephone" Placeholder="(00) 00000-0000" PlaceholderColor="{StaticResource Gray500}" />
 
-            <Label Text="CEP" TextColor="#94a3b8" />
-            <Entry x:Name="CepEntry" TextColor="White" BackgroundColor="#1e293b" Placeholder="00000-000" PlaceholderColor="#64748b" />
+            <Label Text="CEP" TextColor="{StaticResource Gray600}" />
+            <Entry x:Name="CepEntry" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" Placeholder="00000-000" PlaceholderColor="{StaticResource Gray500}" />
 
-            <Label Text="Cidade / UF" TextColor="#94a3b8" />
+            <Label Text="Cidade / UF" TextColor="{StaticResource Gray600}" />
             <Grid ColumnDefinitions="*,80" ColumnSpacing="10">
-                <Entry x:Name="CidadeEntry" Grid.Column="0" TextColor="White" BackgroundColor="#1e293b" Placeholder="Cidade" PlaceholderColor="#64748b" />
-                <Entry x:Name="UfEntry" Grid.Column="1" TextColor="White" BackgroundColor="#1e293b" Placeholder="UF" MaxLength="2" PlaceholderColor="#64748b" />
+                <Entry x:Name="CidadeEntry" Grid.Column="0" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" Placeholder="Cidade" PlaceholderColor="{StaticResource Gray500}" />
+                <Entry x:Name="UfEntry" Grid.Column="1" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" Placeholder="UF" MaxLength="2" PlaceholderColor="{StaticResource Gray500}" />
             </Grid>
 
-            <Label Text="Senha de Acesso *" TextColor="#94a3b8" />
-            <Entry x:Name="SenhaEntry" TextColor="White" BackgroundColor="#1e293b" IsPassword="True" Placeholder="Crie uma senha" PlaceholderColor="#64748b" />
+            <Label Text="Senha de Acesso *" TextColor="{StaticResource Gray600}" />
+            <Entry x:Name="SenhaEntry" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" IsPassword="True" Placeholder="Crie uma senha" PlaceholderColor="{StaticResource Gray500}" />
 
             <Button x:Name="BtnSalvar"
                     Text="CADASTRAR EMPRESA"
-                    BackgroundColor="#0284c7"
+                    BackgroundColor="{StaticResource Primary}"
                     TextColor="White"
                     FontAttributes="Bold"
                     HeightRequest="50"

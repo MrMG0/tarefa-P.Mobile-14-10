@@ -1724,6 +1724,22 @@
         "runtime": {
           "bin/placeholder/VanderClean.Core.dll": {}
         }
+      },
+      "VanderClean.Web/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "VanderClean.Core": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/VanderClean.Web.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VanderClean.Web.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
@@ -4177,6 +4193,11 @@
       "type": "project",
       "path": "../../src/VanderClean.Core/VanderClean.Core.csproj",
       "msbuildProject": "../../src/VanderClean.Core/VanderClean.Core.csproj"
+    },
+    "VanderClean.Web/1.0.0": {
+      "type": "project",
+      "path": "../../src/VanderClean.Web/VanderClean.Web.csproj",
+      "msbuildProject": "../../src/VanderClean.Web/VanderClean.Web.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -4186,6 +4207,7 @@
       "Microsoft.NET.Test.Sdk >= 17.14.1",
       "VanderClean.Api >= 1.0.0",
       "VanderClean.Core >= 1.0.0",
+      "VanderClean.Web >= 1.0.0",
       "coverlet.collector >= 6.0.4",
       "xunit >= 2.9.3",
       "xunit.runner.visualstudio >= 3.1.4"
@@ -4230,6 +4252,9 @@
             },
             "C:\\tarefaKaneko\\VanderClean\\src\\VanderClean.Core\\VanderClean.Core.csproj": {
               "projectPath": "C:\\tarefaKaneko\\VanderClean\\src\\VanderClean.Core\\VanderClean.Core.csproj"
+            },
+            "C:\\tarefaKaneko\\VanderClean\\src\\VanderClean.Web\\VanderClean.Web.csproj": {
+              "projectPath": "C:\\tarefaKaneko\\VanderClean\\src\\VanderClean.Web\\VanderClean.Web.csproj"
             }
           }
         }

@@ -9,7 +9,7 @@
 
 <div class="container py-4">
     <!-- Banner de Boas-vindas -->
-    <div class="p-4 mb-4 rounded-3 text-white" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+    <div class="store-hero p-4 mb-4 rounded-3">
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h1 class="display-6 fw-bold">ShopVander - Produtos VanderClean</h1>
@@ -22,7 +22,7 @@
                 }
                 else
                 {
-                    <a href="/login" class="btn btn-light fw-bold text-primary">Entrar / Criar Conta</a>
+                    <a href="/login" class="btn btn-light fw-bold text-success">Entrar / Criar Conta</a>
                 }
             </div>
         </div>
@@ -31,12 +31,12 @@
     <!-- Barra de Filtros por Categoria -->
     <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
         <span class="fw-bold text-secondary me-2">Categorias:</span>
-        <button class="btn btn-sm @(categoriaSelecionada == null ? "btn-primary" : "btn-outline-secondary")" @onclick="() => SelecionarCategoria(null)">
+        <button class="btn btn-sm @(categoriaSelecionada == null ? "btn-primary" : "btn-outline-primary")" @onclick="() => SelecionarCategoria(null)">
             Todas
         </button>
         @foreach (var cat in categorias)
         {
-            <button class="btn btn-sm @(categoriaSelecionada == cat.Id ? "btn-primary" : "btn-outline-secondary")" @onclick="() => SelecionarCategoria(cat.Id)">
+            <button class="btn btn-sm @(categoriaSelecionada == cat.Id ? "btn-primary" : "btn-outline-primary")" @onclick="() => SelecionarCategoria(cat.Id)">
                 @cat.Nome
             </button>
         }
@@ -48,6 +48,13 @@
         <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-2 text-muted">Carregando catálogo...</p>
+        </div>
+    }
+    else if (erroCatalogo != null)
+    {
+        <div class="alert alert-danger text-center" role="alert">
+            <p class="mb-3">@erroCatalogo</p>
+            <button class="btn btn-primary" @onclick="CarregarProdutos">Tentar novamente</button>
         </div>
     }
     else if (!produtos.Any())
@@ -102,11 +109,34 @@
     private List<Produto> produtos = new();
     private int? categoriaSelecionada = null;
     private bool carregando = true;
+    private string? erroCatalogo;
     private string? mensagemSucesso;
 
     protected override async Task OnInitializedAsync()
     {
-        categorias = await Api.ObterCategoriasAsync();
+        try
+        {
+            categorias = await Api.ObterCategoriasAsync();
+        }
+        catch (HttpRequestException)
+        {
+            erroCatalogo = "Não foi possível acessar o catálogo. Verifique se a API está disponível e tente novamente.";
+            carregando = false;
+            return;
+        }
+        catch (TaskCanceledException)
+        {
+            erroCatalogo = "A conexão com o catálogo excedeu o tempo limite. Tente novamente.";
+            carregando = false;
+            return;
+        }
+        catch (InvalidDataException)
+        {
+            erroCatalogo = "A API retornou dados inválidos para o catálogo.";
+            carregando = false;
+            return;
+        }
+
         await CarregarProdutos();
     }
 
@@ -119,13 +149,38 @@
     private async Task CarregarProdutos()
     {
         carregando = true;
-        produtos = await Api.ObterProdutosAsync(categoriaSelecionada);
-        carregando = false;
+        erroCatalogo = null;
+        try
+        {
+            produtos = await Api.ObterProdutosAsync(categoriaSelecionada);
+        }
+        catch (HttpRequestException)
+        {
+            erroCatalogo = "Não foi possível carregar os produtos. Verifique se a API está disponível e tente novamente.";
+        }
+        catch (TaskCanceledException)
+        {
+            erroCatalogo = "A conexão com o catálogo excedeu o tempo limite. Tente novamente.";
+        }
+        catch (InvalidDataException)
+        {
+            erroCatalogo = "A API retornou dados inválidos para os produtos.";
+        }
+        finally
+        {
+            carregando = false;
+        }
     }
 
     private void AdicionarAoCarrinho(Produto prod)
     {
-        Cart.Adicionar(prod, 1);
-        mensagemSucesso = $"'{prod.Nome}' adicionado à encomenda!";
+        if (Cart.Adicionar(prod, 1))
+        {
+            mensagemSucesso = $"'{prod.Nome}' adicionado à encomenda!";
+        }
+        else
+        {
+            mensagemSucesso = $"Estoque máximo de {prod.Nome} já atingido.";
+        }
     }
 }

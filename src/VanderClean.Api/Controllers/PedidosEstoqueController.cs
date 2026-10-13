@@ -197,9 +197,9 @@ public class PedidosEstoqueController : ControllerBase
 
         // RN14: Validação de fluxo de status
         if (dto.NovoStatus == StatusPedido.CANCELADO && 
-            (pedido.Status == StatusPedido.ENVIADO || pedido.Status == StatusPedido.ENTREGUE))
+            pedido.Status is not (StatusPedido.PENDENTE or StatusPedido.CONFIRMADO or StatusPedido.EM_SEPARACAO))
         {
-            return BadRequest(new { mensagem = "Não é permitido cancelar pedidos já enviados ou entregues." });
+            return BadRequest(new { mensagem = "Só é possível cancelar pedidos pendentes, confirmados ou em separação." });
         }
 
         if (dto.NovoStatus == StatusPedido.DEVOLVIDO && pedido.Status != StatusPedido.ENTREGUE)

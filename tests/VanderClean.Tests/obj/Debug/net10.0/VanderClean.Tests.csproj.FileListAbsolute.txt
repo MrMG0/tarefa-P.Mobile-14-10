@@ -474,3 +474,11 @@ C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\obj\Debug\net10.0\refint\Van
 C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\obj\Debug\net10.0\VanderClean.Tests.pdb
 C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\obj\Debug\net10.0\VanderClean.Tests.genruntimeconfig.cache
 C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\obj\Debug\net10.0\ref\VanderClean.Tests.dll
+C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\bin\Debug\net10.0\VanderClean.Web.deps.json
+C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\bin\Debug\net10.0\VanderClean.Web.runtimeconfig.json
+C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\bin\Debug\net10.0\VanderClean.Web.staticwebassets.runtime.json
+C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\bin\Debug\net10.0\VanderClean.Web.staticwebassets.endpoints.json
+C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\bin\Debug\net10.0\VanderClean.Web.exe
+C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\bin\Debug\net10.0\VanderClean.Web.dll
+C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\bin\Debug\net10.0\VanderClean.Web.pdb
+C:\tarefaKaneko\VanderClean\tests\VanderClean.Tests\obj\Debug\net10.0\VanderClean.Tests.sourcelink.json

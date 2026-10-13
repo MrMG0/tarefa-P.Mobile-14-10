@@ -8,8 +8,8 @@ a, .btn-link {
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: #167a45;
+    border-color: #167a45;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -57,4 +57,88 @@ h1:focus {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+:root {
+    --brand-green: #167a45;
+    --brand-green-dark: #105c34;
+    --brand-green-soft: #e8f4ec;
+    --bs-primary: var(--brand-green);
+    --bs-primary-rgb: 22, 122, 69;
+    --bs-success: var(--brand-green);
+    --bs-success-rgb: 22, 122, 69;
+    --bs-link-color: var(--brand-green);
+    --bs-link-hover-color: var(--brand-green-dark);
+    --bs-body-color: #202823;
+    --bs-body-bg: #fff;
+    --bs-border-color: #e1e8e3;
+    --bs-focus-ring-color: rgb(22 122 69 / 25%);
+}
+
+html, body {
+    min-height: 100%;
+    background: #fff;
+    color: #202823;
+}
+
+a, .btn-link {
+    color: var(--brand-green);
+}
+
+a:hover, .btn-link:hover {
+    color: var(--brand-green-dark);
+}
+
+.btn-primary, .btn-success {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--brand-green);
+    --bs-btn-border-color: var(--brand-green);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--brand-green-dark);
+    --bs-btn-hover-border-color: var(--brand-green-dark);
+    --bs-btn-active-bg: var(--brand-green-dark);
+    --bs-btn-active-border-color: var(--brand-green-dark);
+    --bs-btn-disabled-bg: var(--brand-green);
+    --bs-btn-disabled-border-color: var(--brand-green);
+}
+
+.btn-primary:hover, .btn-primary:active {
+    background-color: var(--brand-green-dark);
+    border-color: var(--brand-green-dark);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--brand-green);
+    --bs-btn-border-color: var(--brand-green);
+    --bs-btn-hover-bg: var(--brand-green);
+    --bs-btn-hover-border-color: var(--brand-green);
+    --bs-btn-active-bg: var(--brand-green-dark);
+    --bs-btn-active-border-color: var(--brand-green-dark);
+}
+
+.nav-pills {
+    --bs-nav-pills-link-active-bg: var(--brand-green);
+}
+
+.btn:focus-visible, .btn-link:focus-visible, .form-control:focus, .form-select:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgb(22 122 69 / 25%);
+}
+
+.card {
+    --bs-card-border-color: #e1e8e3;
+    border-radius: 0.85rem;
+}
+
+.navbar-brand {
+    color: var(--brand-green-dark);
+}
+
+.store-hero {
+    background: var(--brand-green-soft);
+    border: 1px solid #d5e9dc;
+    color: #202823;
+}
+
+.store-hero h1 {
+    color: var(--brand-green-dark);
 }

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using VanderClean.App.Models;
 using VanderClean.App.Services;
+using VanderClean.Core.Enums;
 using VanderClean.Core.Models;
 
 namespace VanderClean.App.Views;
@@ -13,6 +14,7 @@ public class PedidoItemViewModel
     public string TotalFormatado { get; set; } = string.Empty;
     public string Observacao { get; set; } = string.Empty;
     public int? IdPedidoOriginal { get; set; }
+    public bool PodeCancelar { get; set; }
 }
 
 public partial class PedidosPage : ContentPage
@@ -57,7 +59,8 @@ public partial class PedidosPage : ContentPage
                         Status = p.Status.ToString(),
                         DataFormatada = $"Data: {p.DataPedido:dd/MM/yyyy HH:mm}",
                         TotalFormatado = $"Total: R$ {p.ValorTotal:F2}",
-                        Observacao = p.Observacao ?? string.Empty
+                        Observacao = p.Observacao ?? string.Empty,
+                        PodeCancelar = PodeCancelar(p.Status)
                     });
 
                     // Salva/sincroniza cópia no banco local SQLite para modo offline
@@ -98,7 +101,8 @@ public partial class PedidosPage : ContentPage
                         Status = p.Status,
                         DataFormatada = dt != default ? $"Data: {dt:dd/MM/yyyy HH:mm}" : $"Data: {p.DataPedido}",
                         TotalFormatado = $"Total: R$ {p.ValorTotal:F2}",
-                        Observacao = p.Observacao ?? string.Empty
+                        Observacao = p.Observacao ?? string.Empty,
+                        PodeCancelar = false
                     });
                 }
             }
@@ -126,7 +130,8 @@ public partial class PedidosPage : ContentPage
                         Status = p.Status,
                         DataFormatada = dt != default ? $"Data: {dt:dd/MM/yyyy HH:mm}" : $"Data: {p.DataPedido}",
                         TotalFormatado = $"Total: R$ {p.ValorTotal:F2}",
-                        Observacao = p.Observacao ?? string.Empty
+                        Observacao = p.Observacao ?? string.Empty,
+                        PodeCancelar = false
                     });
                 }
             }
@@ -176,6 +181,38 @@ public partial class PedidosPage : ContentPage
             {
                 await DisplayAlert("Não foi possível repetir", resultado.Mensagem, "OK");
             }
+        }
+    }
+
+    private static bool PodeCancelar(StatusPedido status) =>
+        status is StatusPedido.PENDENTE or StatusPedido.CONFIRMADO or StatusPedido.EM_SEPARACAO;
+
+    private async void OnCancelarPedidoClicked(object sender, EventArgs e)
+    {
+        if (sender is not Button { CommandParameter: PedidoItemViewModel pedido })
+        {
+            return;
+        }
+
+        var confirmar = await DisplayAlert(
+            "Cancelar pedido",
+            $"Deseja realmente cancelar o pedido #{pedido.Id}?",
+            "Sim, cancelar",
+            "Manter pedido");
+        if (!confirmar)
+        {
+            return;
+        }
+
+        var resultado = await _apiService.CancelarPedidoEstoqueAsync(pedido.IdPedidoOriginal ?? pedido.Id);
+        if (resultado.Sucesso)
+        {
+            await DisplayAlert("Pedido cancelado", resultado.Mensagem, "OK");
+            await CarregarPedidosAsync();
+        }
+        else
+        {
+            await DisplayAlert("Não foi possível cancelar", resultado.Mensagem, "OK");
         }
     }
 }

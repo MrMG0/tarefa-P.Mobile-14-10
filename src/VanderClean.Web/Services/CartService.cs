@@ -9,18 +9,47 @@ public class CartService
 
     public IReadOnlyCollection<(Produto Produto, decimal Quantidade)> Itens => _itens.Values;
 
-    public void Adicionar(Produto produto, decimal quantidade = 1)
+    public bool Adicionar(Produto produto, decimal quantidade = 1)
     {
-        if (_itens.ContainsKey(produto.Id))
+        if (quantidade <= 0)
         {
-            var atual = _itens[produto.Id];
-            _itens[produto.Id] = (produto, atual.Quantidade + quantidade);
+            return false;
+        }
+
+        var quantidadeAtual = _itens.TryGetValue(produto.Id, out var atual) ? atual.Quantidade : 0;
+        if (quantidadeAtual + quantidade > produto.Estoque)
+        {
+            return false;
+        }
+
+        _itens[produto.Id] = (produto, quantidadeAtual + quantidade);
+        NotifyStateChanged();
+        return true;
+    }
+
+    public bool AtualizarQuantidade(int produtoId, decimal quantidade)
+    {
+        if (!_itens.TryGetValue(produtoId, out var item) || quantidade < 0)
+        {
+            return false;
+        }
+
+        if (quantidade == 0)
+        {
+            _itens.Remove(produtoId);
         }
         else
         {
-            _itens[produto.Id] = (produto, quantidade);
+            if (quantidade > item.Produto.Estoque)
+            {
+                return false;
+            }
+
+            _itens[produtoId] = (item.Produto, quantidade);
         }
+
         NotifyStateChanged();
+        return true;
     }
 
     public void Remover(int produtoId)

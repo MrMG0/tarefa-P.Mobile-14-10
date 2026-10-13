@@ -86,3 +86,4 @@ C:\tarefaKaneko\VanderClean\src\VanderClean.Api\obj\Debug\net10.0\refint\VanderC
 C:\tarefaKaneko\VanderClean\src\VanderClean.Api\obj\Debug\net10.0\VanderClean.Api.pdb
 C:\tarefaKaneko\VanderClean\src\VanderClean.Api\obj\Debug\net10.0\VanderClean.Api.genruntimeconfig.cache
 C:\tarefaKaneko\VanderClean\src\VanderClean.Api\obj\Debug\net10.0\ref\VanderClean.Api.dll
+C:\tarefaKaneko\VanderClean\src\VanderClean.Api\obj\Debug\net10.0\VanderClean.Api.sourcelink.json

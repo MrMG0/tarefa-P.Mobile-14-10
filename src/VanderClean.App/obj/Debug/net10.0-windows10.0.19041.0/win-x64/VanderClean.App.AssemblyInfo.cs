@@ -17,7 +17,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VanderClean.App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+d95e3855ab9068e27867a6c704dded7b9388d1ac")]
 [assembly: System.Reflection.AssemblyProductAttribute("VanderClean.App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VanderClean.App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

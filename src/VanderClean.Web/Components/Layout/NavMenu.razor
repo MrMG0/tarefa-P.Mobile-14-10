@@ -1,9 +1,10 @@
+@implements IDisposable
 @inject CartService Cart
 @inject WebSessionState Session
 
-<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row ps-3 navbar">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="">✨ VanderClean</a>
+        <a class="navbar-brand fw-bold" href="">VanderClean</a>
     </div>
 </div>
 
@@ -22,7 +23,7 @@
                 <span class="bi bi-cart3" aria-hidden="true"></span> Carrinho
                 @if (Cart.TotalItens > 0)
                 {
-                    <span class="badge bg-danger ms-auto">@Cart.TotalItens</span>
+                    <span class="badge bg-success ms-auto">@Cart.TotalItens</span>
                 }
             </NavLink>
         </div>
@@ -44,6 +45,10 @@
 @code {
     protected override void OnInitialized()
     {
-        Cart.OnChange += StateHasChanged;
+        Cart.OnChange += OnCartChanged;
     }
+
+    private void OnCartChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Cart.OnChange -= OnCartChanged;
 }

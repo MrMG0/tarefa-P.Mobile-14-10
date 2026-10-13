@@ -115,6 +115,92 @@ public class BusinessRulesTests
     }
 
     [Fact]
+    public async Task CancelarEncomenda_DeveLiberarEstoqueEAtualizarStatus()
+    {
+        using var context = ObterDbContextEmMemoria("DB_Cancelar_Encomenda");
+        var produto = new Produto { Id = 30, Nome = "Detergente", Preco = 20, Estoque = 8 };
+        var encomenda = new Encomenda
+        {
+            Id = 300,
+            IdCliente = 1,
+            Status = StatusPedido.PENDENTE,
+            Itens = new List<ItemEncomenda>
+            {
+                new() { IdProduto = produto.Id, Produto = produto, Quantidade = 2, PrecoUnitario = 20, Subtotal = 40 }
+            }
+        };
+        context.Produtos.Add(produto);
+        context.Encomendas.Add(encomenda);
+        await context.SaveChangesAsync();
+
+        var controller = new EncomendasController(context);
+        var result = await controller.AtualizarStatus(
+            encomenda.Id,
+            new AtualizarStatusDto { NovoStatus = StatusPedido.CANCELADO });
+
+        Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(StatusPedido.CANCELADO, encomenda.Status);
+        Assert.Equal(10, produto.Estoque);
+    }
+
+    [Fact]
+    public async Task CancelarEncomenda_NaoDeveLiberarEstoqueDuasVezes()
+    {
+        using var context = ObterDbContextEmMemoria("DB_Cancelar_Encomenda_DuasVezes");
+        var produto = new Produto { Id = 31, Nome = "Detergente", Preco = 20, Estoque = 8 };
+        var encomenda = new Encomenda
+        {
+            Id = 301,
+            IdCliente = 1,
+            Status = StatusPedido.CANCELADO,
+            Itens = new List<ItemEncomenda>
+            {
+                new() { IdProduto = produto.Id, Produto = produto, Quantidade = 2, PrecoUnitario = 20, Subtotal = 40 }
+            }
+        };
+        context.Produtos.Add(produto);
+        context.Encomendas.Add(encomenda);
+        await context.SaveChangesAsync();
+
+        var controller = new EncomendasController(context);
+        var result = await controller.AtualizarStatus(
+            encomenda.Id,
+            new AtualizarStatusDto { NovoStatus = StatusPedido.CANCELADO });
+
+        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal(8, produto.Estoque);
+    }
+
+    [Fact]
+    public async Task CancelarEncomenda_DeveFalharSeJaEnviada()
+    {
+        using var context = ObterDbContextEmMemoria("DB_Cancelar_Encomenda_Enviada");
+        var produto = new Produto { Id = 32, Nome = "Detergente", Preco = 20, Estoque = 8 };
+        var encomenda = new Encomenda
+        {
+            Id = 302,
+            IdCliente = 1,
+            Status = StatusPedido.ENVIADO,
+            Itens = new List<ItemEncomenda>
+            {
+                new() { IdProduto = produto.Id, Produto = produto, Quantidade = 2, PrecoUnitario = 20, Subtotal = 40 }
+            }
+        };
+        context.Produtos.Add(produto);
+        context.Encomendas.Add(encomenda);
+        await context.SaveChangesAsync();
+
+        var controller = new EncomendasController(context);
+        var result = await controller.AtualizarStatus(
+            encomenda.Id,
+            new AtualizarStatusDto { NovoStatus = StatusPedido.CANCELADO });
+
+        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal(StatusPedido.ENVIADO, encomenda.Status);
+        Assert.Equal(8, produto.Estoque);
+    }
+
+    [Fact]
     public async Task RN15_CriarPedidoEstoque_DeveCalcularValorTotalCorretamente()
     {
         // Arrange

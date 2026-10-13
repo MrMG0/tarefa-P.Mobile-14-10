@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\VanderClean.Core\VanderClean.Core.csproj" />
     <ProjectReference Include="..\..\src\VanderClean.Api\VanderClean.Api.csproj" />
+    <ProjectReference Include="..\..\src\VanderClean.Web\VanderClean.Web.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using VanderClean.Core.DTOs;
 using VanderClean.Core.Models;
 
@@ -9,6 +10,10 @@ public class WebApiService
 {
     private readonly HttpClient _http;
     private const string ApiBaseUrl = "http://localhost:5000";
+    private static readonly JsonSerializerOptions ApiJsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
 
     public WebApiService(HttpClient http)
     {
@@ -58,14 +63,15 @@ public class WebApiService
 
     public async Task<List<Produto>> ObterProdutosAsync(int? idCategoria = null)
     {
+        var url = idCategoria.HasValue ? $"/api/produtos?idCategoria={idCategoria.Value}" : "/api/produtos";
         try
         {
-            var url = idCategoria.HasValue ? $"/api/produtos?idCategoria={idCategoria.Value}" : "/api/produtos";
-            return await _http.GetFromJsonAsync<List<Produto>>(url) ?? new List<Produto>();
+            return await _http.GetFromJsonAsync<List<Produto>>(url, ApiJsonOptions)
+                ?? throw new InvalidDataException("A API retornou uma lista de produtos vazia ou inválida.");
         }
-        catch
+        catch (System.Text.Json.JsonException ex)
         {
-            return new List<Produto>();
+            throw new InvalidDataException("A API retornou dados inválidos para os produtos.", ex);
         }
     }
 
@@ -73,11 +79,12 @@ public class WebApiService
     {
         try
         {
-            return await _http.GetFromJsonAsync<List<Categoria>>("/api/categorias") ?? new List<Categoria>();
+            return await _http.GetFromJsonAsync<List<Categoria>>("/api/categorias", ApiJsonOptions)
+                ?? throw new InvalidDataException("A API retornou uma lista de categorias vazia ou inválida.");
         }
-        catch
+        catch (System.Text.Json.JsonException ex)
         {
-            return new List<Categoria>();
+            throw new InvalidDataException("A API retornou dados inválidos para as categorias.", ex);
         }
     }
 
@@ -85,7 +92,8 @@ public class WebApiService
     {
         try
         {
-            return await _http.GetFromJsonAsync<List<Encomenda>>($"/api/encomendas/cliente/{idCliente}") ?? new List<Encomenda>();
+            return await _http.GetFromJsonAsync<List<Encomenda>>(
+                $"/api/encomendas/cliente/{idCliente}", ApiJsonOptions) ?? new List<Encomenda>();
         }
         catch
         {
@@ -120,6 +128,37 @@ public class WebApiService
         catch (Exception ex)
         {
             return (false, $"Erro: {ex.Message}");
+        }
+    }
+
+    public async Task<(bool Sucesso, string Mensagem)> CancelarEncomendaAsync(int idEncomenda)
+    {
+        try
+        {
+            var response = await _http.PatchAsJsonAsync(
+                $"/api/encomendas/{idEncomenda}/status",
+                new AtualizarStatusDto { NovoStatus = VanderClean.Core.Enums.StatusPedido.CANCELADO },
+                ApiJsonOptions);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, "Encomenda cancelada com sucesso.");
+            }
+
+            var erro = await response.Content.ReadAsStringAsync();
+            using var documento = JsonDocument.Parse(erro);
+            var mensagem = documento.RootElement.TryGetProperty("mensagem", out var campoMensagem)
+                ? campoMensagem.GetString() ?? "Não foi possível cancelar a encomenda."
+                : erro;
+            return (false, mensagem);
+        }
+        catch (HttpRequestException ex)
+        {
+            return (false, $"Não foi possível conectar à API: {ex.Message}");
+        }
+        catch (JsonException ex)
+        {
+            return (false, $"A API retornou uma resposta inválida: {ex.Message}");
         }
     }
 }

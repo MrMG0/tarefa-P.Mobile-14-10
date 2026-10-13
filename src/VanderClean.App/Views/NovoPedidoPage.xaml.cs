@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text.Json;
 using VanderClean.App.Models;
 using VanderClean.App.Services;
 using VanderClean.Core.DTOs;
@@ -44,8 +45,32 @@ public partial class NovoPedidoPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await CarregarCategoriasAsync();
-        await CarregarProdutosAsync();
+        await CarregarCatalogoAsync();
+    }
+
+    private async Task CarregarCatalogoAsync()
+    {
+        try
+        {
+            await CarregarCategoriasAsync();
+            await CarregarProdutosAsync();
+        }
+        catch (HttpRequestException ex)
+        {
+            await DisplayAlert("Falha ao carregar catálogo", $"Não foi possível acessar a API. Verifique sua conexão e tente novamente.\n\n{ex.Message}", "OK");
+        }
+        catch (TaskCanceledException ex)
+        {
+            await DisplayAlert("Falha ao carregar catálogo", $"A conexão com a API excedeu o tempo limite.\n\n{ex.Message}", "OK");
+        }
+        catch (InvalidDataException ex)
+        {
+            await DisplayAlert("Falha ao carregar catálogo", ex.Message, "OK");
+        }
+        catch (JsonException ex)
+        {
+            await DisplayAlert("Falha ao carregar catálogo", $"A API retornou dados inválidos.\n\n{ex.Message}", "OK");
+        }
     }
 
     private async Task CarregarCategoriasAsync()
@@ -66,14 +91,38 @@ public partial class NovoPedidoPage : ContentPage
 
     private async void OnCategoriaChanged(object sender, EventArgs e)
     {
-        if (CategoriaPicker.SelectedItem is Categoria cat)
+        try
         {
-            await CarregarProdutosAsync(cat.Id);
+            if (CategoriaPicker.SelectedItem is Categoria cat)
+            {
+                await CarregarProdutosAsync(cat.Id);
+            }
+            else
+            {
+                await CarregarProdutosAsync();
+            }
         }
-        else
+        catch (HttpRequestException ex)
         {
-            await CarregarProdutosAsync();
+            await DisplayAlert("Falha ao carregar produtos", $"Não foi possível acessar a API. Verifique sua conexão e tente novamente.\n\n{ex.Message}", "OK");
         }
+        catch (TaskCanceledException ex)
+        {
+            await DisplayAlert("Falha ao carregar produtos", $"A conexão com a API excedeu o tempo limite.\n\n{ex.Message}", "OK");
+        }
+        catch (InvalidDataException ex)
+        {
+            await DisplayAlert("Falha ao carregar produtos", ex.Message, "OK");
+        }
+        catch (JsonException ex)
+        {
+            await DisplayAlert("Falha ao carregar produtos", $"A API retornou dados inválidos.\n\n{ex.Message}", "OK");
+        }
+    }
+
+    private async void OnTentarNovamenteClicked(object sender, EventArgs e)
+    {
+        await CarregarCatalogoAsync();
     }
 
     private void OnAumentarQtdClicked(object sender, EventArgs e)

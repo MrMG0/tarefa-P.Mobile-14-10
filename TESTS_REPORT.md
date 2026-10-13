@@ -1,7 +1,7 @@
 # Plano e Relatório de Testes - VanderClean (ShopVander)
 
 **Projeto:** Sistema de Pedidos e Loja Online VanderClean  
-**Data:** 10/10/2026  
+**Data:** 12/10/2026
 **Status dos Testes:** ✅ **100% Aprovados**
 
 ---
@@ -58,8 +58,14 @@ Executados via `dotnet test tests/VanderClean.Tests/VanderClean.Tests.csproj`:
 | **BR-02** | Regra de Negócio (RN11) | Rejeição de Encomenda Web se a quantidade solicitada exceder o estoque disponível | ✅ APROVADO |
 | **BR-03** | Regra de Negócio (RN14) | Proibição de cancelamento de pedidos com status `ENVIADO` ou `ENTREGUE` | ✅ APROVADO |
 | **BR-04** | Regra de Negócio (RN15) | Cálculo automático e preciso de subtotais e valor total do pedido | ✅ APROVADO |
+| **BR-05** | Regra de Negócio (RN14) | Cancelamento de encomenda pendente atualiza o status e devolve os itens ao estoque | ✅ APROVADO |
+| **BR-06** | Regra de Negócio (RN14) | Rejeição de segundo cancelamento sem duplicar a devolução ao estoque | ✅ APROVADO |
+| **BR-07** | Regra de Negócio (RN14) | Rejeição de cancelamento de encomenda já enviada, preservando status e estoque | ✅ APROVADO |
+| **UT-05** | `CartService` | Inclusão de produtos, atualização do total e contador de itens | ✅ APROVADO |
+| **UT-06** | `CartService` | Alteração de quantidade e remoção do produto ao chegar a zero | ✅ APROVADO |
+| **UT-07** | `CartService` | Limite de quantidade respeita o estoque disponível | ✅ APROVADO |
 
-**Resumo da Execução xUnit:** Total: 13 | Aprovados: 13 | Falhas: 0 | Duração: ~1s.
+**Resumo da Execução xUnit:** Total: 19 | Aprovados: 19 | Falhas: 0 | Executado em 12/10/2026.
 
 ---
 
@@ -84,6 +90,8 @@ Testes de requisições HTTP RESTful contra os controladores da API:
 6. **Atualização de Status (`PATCH /api/pedidos-estoque/{id}/status`):**
    - Transição: de `PENDENTE` para `CONFIRMADO`.
    - Resposta: HTTP 200 OK confirmando novo status da encomenda.
+7. **Cancelamento de Encomenda (`PATCH /api/encomendas/{id}/status`):**
+   - Testes automatizados do controller confirmam o cancelamento antes do envio, a devolução dos itens ao estoque e a rejeição de novo cancelamento ou de encomenda já enviada.
 
 ---
 
@@ -97,6 +105,7 @@ Testes de requisições HTTP RESTful contra os controladores da API:
 - **Lista de Pedidos Feitos:**
   - Exibição de cards com número do pedido, badge de status, data formatada e total em R$.
   - Botão de repetição de pedido acionando a API com feedback em modal.
+  - Botão de cancelamento para pedidos sincronizados pendentes, confirmados ou em separação, com confirmação do usuário e atualização do histórico.
 - **Botão `+` na Navigation Bar (Topo Direito):**
   - Acionamento rápido levando para o Catálogo de Reposição (`NovoPedidoPage`).
   - Filtro funcional por categoria de produto.
@@ -118,3 +127,6 @@ Testes de requisições HTTP RESTful contra os controladores da API:
 - **Histórico e Repetição:**
   - Listagem de todas as encomendas do cliente com seus itens e status.
   - Botão "Repetir Encomenda" recriando o pedido com 1 clique.
+- **Cancelamento de Encomenda:**
+  - Opção disponível enquanto a encomenda estiver pendente, confirmada ou em separação.
+  - A API rejeita cancelamento após o envio e, ao cancelar, devolve os itens ao estoque uma única vez.

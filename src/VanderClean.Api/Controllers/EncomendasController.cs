@@ -210,21 +210,35 @@ public class EncomendasController : ControllerBase
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> AtualizarStatus(int id, [FromBody] AtualizarStatusDto dto)
     {
-        var encomenda = await _context.Encomendas.FindAsync(id);
+        var encomenda = await _context.Encomendas
+            .Include(e => e.Itens)
+                .ThenInclude(i => i.Produto)
+            .FirstOrDefaultAsync(e => e.Id == id);
         if (encomenda == null)
         {
             return NotFound(new { mensagem = "Encomenda não encontrada." });
         }
 
         if (dto.NovoStatus == StatusPedido.CANCELADO &&
-            (encomenda.Status == StatusPedido.ENVIADO || encomenda.Status == StatusPedido.ENTREGUE))
+            encomenda.Status is not (StatusPedido.PENDENTE or StatusPedido.CONFIRMADO or StatusPedido.EM_SEPARACAO))
         {
-            return BadRequest(new { mensagem = "Não é permitido cancelar encomendas já enviadas ou entregues." });
+            return BadRequest(new { mensagem = "Só é possível cancelar encomendas pendentes, confirmadas ou em separação." });
         }
 
         if (dto.NovoStatus == StatusPedido.DEVOLVIDO && encomenda.Status != StatusPedido.ENTREGUE)
         {
             return BadRequest(new { mensagem = "Devolução só pode ser aplicada após a encomenda ter sido entregue." });
+        }
+
+        if (dto.NovoStatus == StatusPedido.CANCELADO)
+        {
+            foreach (var item in encomenda.Itens)
+            {
+                if (item.Produto is not null)
+                {
+                    item.Produto.Estoque += (int)item.Quantidade;
+                }
+            }
         }
 
         encomenda.Status = dto.NovoStatus;

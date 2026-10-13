@@ -4,7 +4,6 @@
                         Trabalho Acadêmico
 ================================================================================
 Data: 10/10/2026
-Versão: 2.0
 
 ================================================================================
 1. OBJETIVO DO PROJETO
@@ -297,7 +296,8 @@ RF08 - Repetir Pedido de Estoque
 
 RF09 - Lista de Pedidos de Estoque
   O app exibe o histórico de pedidos de reposição com status e prazo
-  de entrega.
+  de entrega. Pedidos sincronizados ainda não enviados podem ser
+  cancelados pelo dono/funcionário.
 
 
 --- SITE WEB (Cliente Final - Encomendas) ---
@@ -334,7 +334,8 @@ RF16 - Repetir Encomenda Anterior
 
 RF17 - Histórico de Encomendas
   O site exibe a lista de encomendas do cliente com status e prazo
-  de entrega.
+  de entrega. Encomendas ainda não enviadas podem ser canceladas pelo
+  cliente.
 
 
 --- COMUM (App e Site) ---
@@ -352,6 +353,11 @@ RF18 - Status do Pedido/Encomenda
 RF19 - Prazo de Entrega
   O sistema informa o prazo fixo de entrega (padrão: 3 dias úteis)
   a partir da confirmação do pedido/encomenda.
+
+RF20 - Cancelamento de Pedido/Encomenda
+  O app e o site oferecem a opção de cancelamento antes do envio,
+  mediante confirmação do usuário. A opção não aparece para registros
+  locais ainda não sincronizados.
 
 
 ================================================================================
@@ -445,7 +451,12 @@ RN13 - Prazo de Entrega Fixo
 RN14 - Fluxo de Status
   O status segue a ordem:
     Pendente → Confirmado → Em Separação → Enviado → Entregue
-  Cancelamento possível a qualquer momento antes de "Enviado".
+  Cancelamento permitido somente nos status Pendente, Confirmado ou
+  Em Separação. Pedidos/encomendas enviados, entregues ou já cancelados
+  não podem ser cancelados novamente.
+  Ao cancelar uma encomenda da loja, os itens reservados retornam ao
+  estoque uma única vez. Pedido de reposição do app não altera o
+  estoque da loja ao ser cancelado.
   "Devolvido" só pode ser aplicado após "Entregue".
 
 RN15 - Sem Pagamento
@@ -545,6 +556,28 @@ RN15 - Sem Pagamento
   5. Dono/funcionário (app) ou cliente (site) visualiza o status
      atualizado.
 
+8.8. FLUXO - SITE: CANCELAR ENCOMENDA
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Cliente acessa o histórico de encomendas.
+  2. Para encomendas pendentes, confirmadas ou em separação, seleciona
+     "Cancelar" e confirma a ação.
+  3. O site solicita à API a mudança do status para "Cancelado".
+  4. A API valida o status atual, atualiza a encomenda e devolve os itens
+     ao estoque uma única vez.
+  5. O histórico é atualizado. Encomendas enviadas, entregues ou já
+     canceladas não podem ser canceladas.
+
+8.9. FLUXO - APP: CANCELAR PEDIDO DE REPOSIÇÃO
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Dono/funcionário acessa o histórico de pedidos de reposição.
+  2. Para pedidos sincronizados pendentes, confirmados ou em separação,
+     seleciona "Cancelar" e confirma a ação.
+  3. O app solicita à API a mudança do status para "Cancelado".
+  4. A API valida o status atual e atualiza o pedido.
+  5. O histórico é atualizado. Pedidos locais não sincronizados e pedidos
+     enviados, entregues ou já cancelados não podem ser cancelados pelo app.
 
 ================================================================================
 9. ATRIBUTOS DAS ENTIDADES (RESUMO)

@@ -46,7 +46,18 @@
                                                 <small class="text-muted">@item.Produto.Categoria?.Nome</small>
                                             </td>
                                             <td>R$ @item.Produto.Preco.ToString("F2")</td>
-                                            <td>@item.Quantidade</td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <button class="btn btn-sm btn-outline-primary"
+                                                            aria-label="Diminuir quantidade de @item.Produto.Nome"
+                                                            @onclick="() => Cart.AtualizarQuantidade(item.Produto.Id, item.Quantidade - 1)">−</button>
+                                                    <span class="fw-semibold">@item.Quantidade.ToString("0.##")</span>
+                                                    <button class="btn btn-sm btn-outline-primary"
+                                                            aria-label="Aumentar quantidade de @item.Produto.Nome"
+                                                            disabled="@(item.Quantidade >= item.Produto.Estoque)"
+                                                            @onclick="() => Cart.AtualizarQuantidade(item.Produto.Id, item.Quantidade + 1)">+</button>
+                                                </div>
+                                            </td>
                                             <td class="fw-bold text-success">R$ @((item.Produto.Preco * item.Quantidade).ToString("F2"))</td>
                                             <td>
                                                 <button class="btn btn-sm btn-outline-danger" @onclick="() => Cart.Remover(item.Produto.Id)">✕</button>
@@ -88,7 +99,7 @@
                             <div class="alert alert-warning small">
                                 Você precisa estar conectado para confirmar a encomenda.
                             </div>
-                            <a href="/login" class="btn btn-warning w-100 py-2 fw-bold">Fazer Login para Concluir</a>
+                            <a href="/login" class="btn btn-primary w-100 py-2 fw-bold">Fazer Login para Concluir</a>
                         }
                         else
                         {

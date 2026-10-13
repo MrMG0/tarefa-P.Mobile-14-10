@@ -4,53 +4,65 @@
              x:Class="VanderClean.App.Views.LoginPage"
              Title="ShopVander - Login"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="#0f172a">
+             BackgroundColor="White">
 
     <ScrollView>
-        <VerticalStackLayout Spacing="20" Padding="30" VerticalOptions="Center">
+        <VerticalStackLayout Spacing="18" Padding="28,36" VerticalOptions="Center">
             
-            <Image Source="dotnet_bot.png"
-                   HeightRequest="90"
-                   HorizontalOptions="Center" />
+            <Border BackgroundColor="{StaticResource Secondary}"
+                    Stroke="Transparent"
+                    HeightRequest="72"
+                    WidthRequest="72"
+                    HorizontalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="36" />
+                </Border.StrokeShape>
+                <Label Text="V"
+                       FontSize="36"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource Primary}"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center" />
+            </Border>
 
             <Label Text="ShopVander"
                    FontSize="32"
                    FontAttributes="Bold"
-                   TextColor="#38bdf8"
+                   TextColor="{StaticResource Primary}"
                    HorizontalOptions="Center" />
 
             <Label Text="Acesso do Dono / Funcionário"
                    FontSize="16"
-                   TextColor="#94a3b8"
+                   TextColor="{StaticResource Gray600}"
                    HorizontalOptions="Center" />
 
-            <Border BackgroundColor="#1e293b" Stroke="#334155" StrokeThickness="1" Padding="20">
+            <Border BackgroundColor="White" Stroke="{StaticResource Gray200}" StrokeThickness="1" Padding="20">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="15">
                     
-                    <Label Text="E-mail Corporativo" TextColor="#cbd5e1" FontSize="14" />
+                    <Label Text="E-mail Corporativo" TextColor="{StaticResource Gray600}" FontSize="14" />
                     <Entry x:Name="EmailEntry"
                            Placeholder="ex: contato@vanderclean.com.br"
                            Text="contato@vanderclean.com.br"
-                           TextColor="White"
-                           PlaceholderColor="#64748b"
+                           TextColor="{StaticResource Gray900}"
+                           PlaceholderColor="{StaticResource Gray500}"
                            Keyboard="Email"
-                           BackgroundColor="#0f172a" />
+                           BackgroundColor="{StaticResource Gray100}" />
 
-                    <Label Text="Senha" TextColor="#cbd5e1" FontSize="14" />
+                    <Label Text="Senha" TextColor="{StaticResource Gray600}" FontSize="14" />
                     <Entry x:Name="SenhaEntry"
                            Placeholder="Sua senha"
                            Text="123456"
                            IsPassword="True"
-                           TextColor="White"
-                           PlaceholderColor="#64748b"
-                           BackgroundColor="#0f172a" />
+                           TextColor="{StaticResource Gray900}"
+                           PlaceholderColor="{StaticResource Gray500}"
+                           BackgroundColor="{StaticResource Gray100}" />
 
                     <Button x:Name="BtnEntrar"
                             Text="ENTRAR"
-                            BackgroundColor="#0284c7"
+                            BackgroundColor="{StaticResource Primary}"
                             TextColor="White"
                             FontAttributes="Bold"
                             CornerRadius="8"
@@ -60,13 +72,13 @@
                     <ActivityIndicator x:Name="LoadingIndicator"
                                        IsRunning="False"
                                        IsVisible="False"
-                                       Color="#38bdf8" />
+                                       Color="{StaticResource Primary}" />
 
                 </VerticalStackLayout>
             </Border>
 
             <Button Text="Cadastrar Minha Empresa"
-                    TextColor="#38bdf8"
+                    TextColor="{StaticResource Primary}"
                     BackgroundColor="Transparent"
                     FontAttributes="Bold"
                     Clicked="OnRegistrarClicked" />

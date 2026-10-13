@@ -26,7 +26,6 @@ C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\scopedcss\Comp
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\scopedcss\Components\Layout\ReconnectModal.razor.rz.scp.css
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\scopedcss\bundle\VanderClean.Web.styles.css
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\scopedcss\projectbundle\VanderClean.Web.bundle.scp.css
-C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\w1gqk9k9o6-{0}-khy4lop6wu-khy4lop6wu.gz
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\n0j68mb4vj-{0}-bqjiyaj88i-bqjiyaj88i.gz
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\k8lfilp43u-{0}-c2jlpeoesf-c2jlpeoesf.gz
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\kwecj4fegb-{0}-erw9l3u2r3-erw9l3u2r3.gz
@@ -74,8 +73,6 @@ C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\5jx
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\psanu4twx1-{0}-abdmv1u4y3-abdmv1u4y3.gz
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\zteph88y4d-{0}-wyu7y4jcvb-wyu7y4jcvb.gz
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\nhnq8ii4ds-{0}-wfr2hj6447-wfr2hj6447.gz
-C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\3ygc19wuz5-{0}-7pv13hxsqq-7pv13hxsqq.gz
-C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\l1nve2xwr4-{0}-7pv13hxsqq-7pv13hxsqq.gz
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\staticwebassets.build.json
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\staticwebassets.development.json
@@ -87,3 +84,7 @@ C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\refint\VanderC
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\VanderClean.Web.pdb
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\VanderClean.Web.genruntimeconfig.cache
 C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\ref\VanderClean.Web.dll
+C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\VanderClean.Web.sourcelink.json
+C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\w1gqk9k9o6-{0}-gtfn8v0xld-gtfn8v0xld.gz
+C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\3ygc19wuz5-{0}-oqzpa6nq6a-oqzpa6nq6a.gz
+C:\tarefaKaneko\VanderClean\src\VanderClean.Web\obj\Debug\net10.0\compressed\l1nve2xwr4-{0}-oqzpa6nq6a-oqzpa6nq6a.gz

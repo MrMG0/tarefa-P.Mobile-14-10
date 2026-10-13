@@ -43,6 +43,7 @@
           "Microsoft.NET.Test.Sdk": "17.14.1",
           "VanderClean.Api": "1.0.0",
           "VanderClean.Core": "1.0.0",
+          "VanderClean.Web": "1.0.0",
           "coverlet.collector": "6.0.4",
           "xunit": "2.9.3",
           "xunit.runner.visualstudio": "3.1.4",
@@ -1772,6 +1773,20 @@
         },
         "compile": {
           "VanderClean.Core.dll": {}
+        }
+      },
+      "VanderClean.Web/1.0.0": {
+        "dependencies": {
+          "VanderClean.Core": "1.0.0"
+        },
+        "runtime": {
+          "VanderClean.Web.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "VanderClean.Web.dll": {}
         }
       },
       "Microsoft.AspNetCore.Antiforgery/10.0.0.0": {
@@ -3983,6 +3998,11 @@
       "sha512": ""
     },
     "VanderClean.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VanderClean.Web/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

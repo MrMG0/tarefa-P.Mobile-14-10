@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="VanderClean.App.Views.NovoPedidoPage"
              Title="Novo Pedido de Reposição"
-             BackgroundColor="#0f172a">
+         BackgroundColor="White">
 
     <Grid RowDefinitions="Auto,*,Auto">
         
         <!-- Filtro por Categoria -->
         <Border Grid.Row="0"
-                BackgroundColor="#1e293b"
-                Stroke="#334155"
+                BackgroundColor="White"
+                Stroke="{StaticResource Gray200}"
                 StrokeThickness="1"
                 Padding="10"
                 Margin="10,5">
@@ -18,12 +18,12 @@
                 <RoundRectangle CornerRadius="8" />
             </Border.StrokeShape>
             <VerticalStackLayout Spacing="5">
-                <Label Text="Filtrar por Categoria:" TextColor="#94a3b8" FontSize="12" />
+                <Label Text="Filtrar por Categoria:" TextColor="{StaticResource Gray600}" FontSize="12" />
                 <Picker x:Name="CategoriaPicker"
                         Title="Todas as Categorias"
-                        TextColor="White"
-                        TitleColor="#64748b"
-                        BackgroundColor="#0f172a"
+                        TextColor="{StaticResource Gray900}"
+                        TitleColor="{StaticResource Gray500}"
+                        BackgroundColor="{StaticResource Gray100}"
                         ItemDisplayBinding="{Binding Nome}"
                         SelectedIndexChanged="OnCategoriaChanged" />
             </VerticalStackLayout>
@@ -34,10 +34,24 @@
                         x:Name="ProdutosCollectionView"
                         SelectionMode="None"
                         Margin="10,0">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                     Spacing="10"
+                                     Padding="24">
+                    <Label Text="Nenhum produto disponível nesta categoria."
+                           TextColor="{StaticResource Gray600}"
+                           HorizontalTextAlignment="Center" />
+                    <Button Text="Tentar novamente"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White"
+                            Clicked="OnTentarNovamenteClicked" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border BackgroundColor="#1e293b"
-                            Stroke="#334155"
+                    <Border BackgroundColor="White"
+                            Stroke="{StaticResource Gray200}"
                             StrokeThickness="1"
                             Margin="0,4"
                             Padding="12">
@@ -48,15 +62,15 @@
                             
                             <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
                                 <Label Text="{Binding Produto.Nome}"
-                                       TextColor="White"
+                                       TextColor="{StaticResource Gray900}"
                                        FontAttributes="Bold"
                                        FontSize="15" />
                                 <Label Text="{Binding Produto.Descricao}"
-                                       TextColor="#94a3b8"
+                                       TextColor="{StaticResource Gray600}"
                                        FontSize="12"
                                        MaxLines="2" />
                                 <Label Text="{Binding Produto.Preco, StringFormat='R$ {0:F2}'}"
-                                       TextColor="#38bdf8"
+                                       TextColor="{StaticResource Primary}"
                                        FontAttributes="Bold"
                                        FontSize="14" />
                             </VerticalStackLayout>
@@ -64,8 +78,8 @@
                             <!-- Controles de Quantidade +/- -->
                             <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="6" VerticalOptions="Center">
                                 <Button Text="-"
-                                        BackgroundColor="#334155"
-                                        TextColor="White"
+                                        BackgroundColor="{StaticResource Gray200}"
+                                        TextColor="{StaticResource Gray900}"
                                         WidthRequest="36"
                                         HeightRequest="36"
                                         CornerRadius="18"
@@ -73,7 +87,7 @@
                                         Clicked="OnDiminuirQtdClicked" />
 
                                 <Label Text="{Binding Quantidade}"
-                                       TextColor="White"
+                                       TextColor="{StaticResource Gray900}"
                                        FontSize="16"
                                        FontAttributes="Bold"
                                        VerticalOptions="Center"
@@ -81,7 +95,7 @@
                                        WidthRequest="30" />
 
                                 <Button Text="+"
-                                        BackgroundColor="#0284c7"
+                                        BackgroundColor="{StaticResource Primary}"
                                         TextColor="White"
                                         WidthRequest="36"
                                         HeightRequest="36"
@@ -98,8 +112,8 @@
 
         <!-- Rodapé com Total e Botão de Finalizar Pedido -->
         <Border Grid.Row="2"
-                BackgroundColor="#1e293b"
-                Stroke="#334155"
+                BackgroundColor="White"
+                Stroke="{StaticResource Gray200}"
                 StrokeThickness="1"
                 Padding="15"
                 Margin="0">
@@ -108,10 +122,10 @@
             </Border.StrokeShape>
             <Grid ColumnDefinitions="*,Auto">
                 <VerticalStackLayout Grid.Column="0">
-                    <Label Text="Total Estimado:" TextColor="#94a3b8" FontSize="12" />
+                    <Label Text="Total Estimado:" TextColor="{StaticResource Gray600}" FontSize="12" />
                     <Label x:Name="TotalLabel"
                            Text="R$ 0,00"
-                           TextColor="#4ade80"
+                           TextColor="{StaticResource Primary}"
                            FontAttributes="Bold"
                            FontSize="20" />
                 </VerticalStackLayout>
@@ -119,7 +133,7 @@
                 <Button Grid.Column="1"
                         x:Name="BtnConfirmar"
                         Text="CONFIRMAR PEDIDO"
-                        BackgroundColor="#16a34a"
+                        BackgroundColor="{StaticResource Primary}"
                         TextColor="White"
                         FontAttributes="Bold"
                         CornerRadius="8"
