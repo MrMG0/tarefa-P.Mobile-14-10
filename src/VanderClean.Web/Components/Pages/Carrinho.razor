@@ -1,0 +1,145 @@
+@page "/carrinho"
+@rendermode InteractiveServer
+@inject CartService Cart
+@inject WebApiService Api
+@inject WebSessionState Session
+@inject NavigationManager Nav
+
+<PageTitle>Meu Carrinho - ShopVander</PageTitle>
+
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Minha Encomenda</h2>
+
+    @if (!Cart.Itens.Any())
+    {
+        <div class="card p-5 text-center shadow-sm border-0">
+            <h4>Seu carrinho está vazio</h4>
+            <p class="text-muted">Navegue pelos produtos da loja VanderClean e selecione os itens desejados.</p>
+            <div>
+                <a href="/" class="btn btn-primary mt-2">Ver Catálogo de Produtos</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Preço</th>
+                                        <th style="width: 120px;">Qtd</th>
+                                        <th>Subtotal</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Cart.Itens)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">@item.Produto.Nome</div>
+                                                <small class="text-muted">@item.Produto.Categoria?.Nome</small>
+                                            </td>
+                                            <td>R$ @item.Produto.Preco.ToString("F2")</td>
+                                            <td>@item.Quantidade</td>
+                                            <td class="fw-bold text-success">R$ @((item.Produto.Preco * item.Quantidade).ToString("F2"))</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => Cart.Remover(item.Produto.Id)">✕</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Resumo da Encomenda</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Itens:</span>
+                            <span>@Cart.TotalItens</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Prazo de Entrega:</span>
+                            <span class="badge bg-info text-dark">3 dias úteis</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-4 fs-5 fw-bold">
+                            <span>Total:</span>
+                            <span class="text-success">R$ @Cart.Total.ToString("F2")</span>
+                        </div>
+
+                        @if (erro != null)
+                        {
+                            <div class="alert alert-danger small">@erro</div>
+                        }
+
+                        @if (!Session.IsAutenticado)
+                        {
+                            <div class="alert alert-warning small">
+                                Você precisa estar conectado para confirmar a encomenda.
+                            </div>
+                            <a href="/login" class="btn btn-warning w-100 py-2 fw-bold">Fazer Login para Concluir</a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success w-100 py-2 fw-bold" @onclick="ConfirmarEncomenda" disabled="@processando">
+                                @(processando ? "Enviando..." : "Confirmar Encomenda")
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool processando = false;
+    private string? erro;
+
+    private async Task ConfirmarEncomenda()
+    {
+        if (!Session.IsAutenticado || !Session.ClienteId.HasValue)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        processando = true;
+        erro = null;
+
+        var dto = new CriarEncomendaDto
+        {
+            IdCliente = Session.ClienteId.Value,
+            Observacao = "Encomenda realizada pelo site VanderClean Web",
+            Itens = Cart.Itens.Select(i => new ItemPedidoCriacaoDto
+            {
+                IdProduto = i.Produto.Id,
+                Quantidade = i.Quantidade
+            }).ToList()
+        };
+
+        var res = await Api.CriarEncomendaAsync(dto);
+        if (res.Sucesso)
+        {
+            Cart.Limpar();
+            Nav.NavigateTo("/encomendas");
+        }
+        else
+        {
+            erro = res.Mensagem;
+        }
+
+        processando = false;
+    }
+}

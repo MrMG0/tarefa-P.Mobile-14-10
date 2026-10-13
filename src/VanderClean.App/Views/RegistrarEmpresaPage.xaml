@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VanderClean.App.Views.RegistrarEmpresaPage"
+             Title="Cadastro de Empresa"
+             BackgroundColor="#0f172a">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="20">
+            <Label Text="Dados da Empresa VanderClean"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="#38bdf8" />
+
+            <Label Text="Razão Social *" TextColor="#94a3b8" />
+            <Entry x:Name="RazaoSocialEntry" TextColor="White" BackgroundColor="#1e293b" Placeholder="Razão Social" PlaceholderColor="#64748b" />
+
+            <Label Text="Nome Fantasia" TextColor="#94a3b8" />
+            <Entry x:Name="NomeFantasiaEntry" TextColor="White" BackgroundColor="#1e293b" Placeholder="Nome Fantasia" PlaceholderColor="#64748b" />
+
+            <Label Text="CNPJ *" TextColor="#94a3b8" />
+            <Entry x:Name="CnpjEntry" TextColor="White" BackgroundColor="#1e293b" Placeholder="00.000.000/0000-00" PlaceholderColor="#64748b" />
+
+            <Label Text="E-mail *" TextColor="#94a3b8" />
+            <Entry x:Name="EmailEntry" TextColor="White" BackgroundColor="#1e293b" Keyboard="Email" Placeholder="contato@empresa.com" PlaceholderColor="#64748b" />
+
+            <Label Text="Telefone" TextColor="#94a3b8" />
+            <Entry x:Name="TelefoneEntry" TextColor="White" BackgroundColor="#1e293b" Keyboard="Telephone" Placeholder="(00) 00000-0000" PlaceholderColor="#64748b" />
+
+            <Label Text="CEP" TextColor="#94a3b8" />
+            <Entry x:Name="CepEntry" TextColor="White" BackgroundColor="#1e293b" Placeholder="00000-000" PlaceholderColor="#64748b" />
+
+            <Label Text="Cidade / UF" TextColor="#94a3b8" />
+            <Grid ColumnDefinitions="*,80" ColumnSpacing="10">
+                <Entry x:Name="CidadeEntry" Grid.Column="0" TextColor="White" BackgroundColor="#1e293b" Placeholder="Cidade" PlaceholderColor="#64748b" />
+                <Entry x:Name="UfEntry" Grid.Column="1" TextColor="White" BackgroundColor="#1e293b" Placeholder="UF" MaxLength="2" PlaceholderColor="#64748b" />
+            </Grid>
+
+            <Label Text="Senha de Acesso *" TextColor="#94a3b8" />
+            <Entry x:Name="SenhaEntry" TextColor="White" BackgroundColor="#1e293b" IsPassword="True" Placeholder="Crie uma senha" PlaceholderColor="#64748b" />
+
+            <Button x:Name="BtnSalvar"
+                    Text="CADASTRAR EMPRESA"
+                    BackgroundColor="#0284c7"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    Margin="0,15,0,30"
+                    Clicked="OnSalvarClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

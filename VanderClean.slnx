@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VanderClean.Api/VanderClean.Api.csproj" />
+    <Project Path="src/VanderClean.App/VanderClean.App.csproj" />
+    <Project Path="src/VanderClean.Core/VanderClean.Core.csproj" />
+    <Project Path="src/VanderClean.Web/VanderClean.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VanderClean.Tests/VanderClean.Tests.csproj" />
+  </Folder>
+</Solution>

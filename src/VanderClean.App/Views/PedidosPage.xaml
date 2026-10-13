@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VanderClean.App.Views.PedidosPage"
+             Title="Pedidos de Reposição"
+             BackgroundColor="#0f172a">
+
+    <!-- Botão de "+" no canto superior direito da Navigation Bar conforme solicitado -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="+"
+                     Priority="0"
+                     Order="Primary"
+                     Clicked="OnNovoPedidoClicked" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,*">
+        
+        <!-- Header com boas-vindas e botão de atualizar -->
+        <Border Grid.Row="0"
+                BackgroundColor="#1e293b"
+                Stroke="#334155"
+                StrokeThickness="1"
+                Padding="15,10"
+                Margin="10,10,10,5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0">
+                    <Label Text="Histórico de Reposição"
+                           TextColor="#38bdf8"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+                    <Label Text="Toque em '+' no topo para repor o estoque"
+                           TextColor="#94a3b8"
+                           FontSize="12" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1"
+                        Text="↻ Atualizar"
+                        FontSize="12"
+                        BackgroundColor="#334155"
+                        TextColor="White"
+                        HeightRequest="36"
+                        Clicked="OnAtualizarClicked" />
+            </Grid>
+        </Border>
+
+        <RefreshView Grid.Row="1"
+                     x:Name="ListaRefreshView"
+                     Refreshing="OnRefreshRequested"
+                     RefreshColor="#38bdf8">
+            <CollectionView x:Name="PedidosCollectionView"
+                            SelectionMode="None"
+                            Margin="10,5">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Margin="20">
+                        <Label Text="Nenhum pedido de estoque realizado ainda."
+                               TextColor="#94a3b8"
+                               FontSize="16"
+                               HorizontalOptions="Center" />
+                        <Button Text="+ Fazer Primeiro Pedido"
+                                BackgroundColor="#0284c7"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                CornerRadius="8"
+                                Clicked="OnNovoPedidoClicked" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="#1e293b"
+                                Stroke="#334155"
+                                StrokeThickness="1"
+                                Margin="0,5"
+                                Padding="15">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="{Binding Id, StringFormat='Pedido #{0}'}"
+                                           TextColor="White"
+                                           FontAttributes="Bold"
+                                           FontSize="16" />
+                                    <!-- Badge de Status -->
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="#0369a1"
+                                            Padding="8,3"
+                                            Stroke="Transparent">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="6" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding Status}"
+                                               TextColor="#e0f2fe"
+                                               FontSize="11"
+                                               FontAttributes="Bold" />
+                                    </Border>
+                                </Grid>
+
+                                <Label Text="{Binding DataFormatada}"
+                                       TextColor="#94a3b8"
+                                       FontSize="13" />
+
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+                                    <Label Text="{Binding TotalFormatado}"
+                                           TextColor="#4ade80"
+                                           FontAttributes="Bold"
+                                           FontSize="15"
+                                           VerticalOptions="Center" />
+
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="8">
+                                        <!-- Ação de Repetir Pedido (RN05) -->
+                                        <Button Text="Repetir Pedido"
+                                                BackgroundColor="#0284c7"
+                                                TextColor="White"
+                                                FontSize="12"
+                                                HeightRequest="36"
+                                                CornerRadius="6"
+                                                CommandParameter="{Binding .}"
+                                                Clicked="OnRepetirPedidoClicked" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+
+                                <Label Text="{Binding Observacao}"
+                                       TextColor="#64748b"
+                                       FontSize="12"
+                                       FontAttributes="Italic" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>

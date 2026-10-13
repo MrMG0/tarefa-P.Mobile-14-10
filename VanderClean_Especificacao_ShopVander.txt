@@ -1,0 +1,767 @@
+================================================================================
+         ESPECIFICAÇÃO DO PROJETO - SHOPVANDER (VanderClean)
+          Sistema de Pedidos de Loja de Produtos de Limpeza
+                        Trabalho Acadêmico
+================================================================================
+Data: 10/10/2026
+Versão: 2.0
+
+================================================================================
+1. OBJETIVO DO PROJETO
+================================================================================
+
+Desenvolver um sistema completo para a loja de produtos de limpeza VanderClean,
+composto por duas frentes:
+
+  - Um APLICATIVO MOBILE (ShopVander App) para uso INTERNO do dono/funcionário
+    da VanderClean, destinado a fazer pedidos de reposição de estoque junto
+    a fornecedores.
+
+  - Um SITE WEB (ShopVander Web) para uso do CLIENTE FINAL, onde ele pode se
+    cadastrar, navegar pelos produtos da loja e realizar encomendas.
+
+  - Uma API RESTful central que conecta ambas as plataformas ao banco de dados,
+    gerencia produtos, clientes, pedidos de estoque e encomendas de clientes.
+
+O sistema NÃO inclui processamento de pagamentos, pois o foco é o registro
+de pedidos e encomendas.
+
+Projeto desenvolvido como trabalho acadêmico.
+
+
+================================================================================
+2. INFRAESTRUTURA E ARQUITETURA
+================================================================================
+
+  ┌─────────────────────────────────┐
+  │  CELULAR (.NET MAUI)            │
+  │  Uso: DONO / FUNCIONÁRIO        │
+  │  ┌──────────┬────────────────┐  │
+  │  │Cadastro  │ Pedido Estoque │  │
+  │  │Empresa   │ Produto/Categ. │  │
+  │  └──────────┴────────────────┘  │
+  │       SQLite (local)            │
+  └──────────────┬──────────────────┘
+                 │ HTTPS
+                 ▼
+  ┌─────────────────────────────┐       ┌──────────────────┐
+  │     API (.NET Core)         │◄─────►│   MySQL (BD)     │
+  │     Web Service REST        │       │   Servidor       │
+  └──────────────▲──────────────┘       └──────────────────┘
+                 │ HTTPS
+  ┌──────────────┴──────────────────┐
+  │  SITE WEB / LOJA ONLINE         │
+  │  Uso: CLIENTE FINAL              │
+  │  ┌──────────┬────────────────┐   │
+  │  │Cadastro  │ Encomenda      │   │
+  │  │Cliente   │ Produtos/Categ.│   │
+  │  └──────────┴────────────────┘   │
+  └──────────────────────────────────┘
+
+
+================================================================================
+3. FERRAMENTAS E TECNOLOGIAS
+================================================================================
+
+3.1. Aplicativo Mobile - ShopVander App (Uso Interno: Dono/Funcionário)
+  - Linguagem/Framework: C# com .NET MAUI
+  - Banco de dados local: SQLite
+  - IDE: Visual Studio Code
+  - Plataforma alvo: Android
+
+3.2. API / Web Service (Backend)
+  - Linguagem/Framework: C# com ASP.NET Core (Web API)
+  - Banco de dados: MySQL (servidor)
+  - IDE: Visual Studio Code
+
+3.3. Site Web - ShopVander Web (Uso Externo: Cliente Final)
+  - Frontend consumindo a mesma API REST
+  - Tecnologia web a definir (Blazor, HTML/CSS/JS ou framework JS)
+  - IDE: Visual Studio Code
+
+3.4. Controle de Versão
+  - Git / GitHub (conta dedicada para o projeto)
+
+3.5. Ferramenta de Apoio ao Desenvolvimento
+  - Gemini integrado ao Visual Studio Code
+
+3.6. Segurança / Criptografia
+  - Comunicação via HTTPS (TLS) entre cliente e API
+  - Senhas armazenadas com hash (bcrypt ou SHA-256)
+
+
+================================================================================
+4. ESPECIFICAÇÃO DO BANCO DE DADOS
+================================================================================
+
+4.1. BANCO LOCAL - SQLite (Aplicativo MAUI - Dono/Funcionário)
+────────────────────────────────────────────────────────────────────────────────
+
+  Armazena dados localmente no dispositivo do dono/funcionário para
+  funcionamento offline parcial. Os dados são sincronizados com a API.
+
+  Tabela: EmpresaLocal
+  ─────────────────────
+  - Id                  INTEGER     PK, autoincremento
+  - RazaoSocial         TEXT        não nulo
+  - NomeFantasia        TEXT
+  - Cnpj                TEXT        não nulo
+  - Email               TEXT        não nulo
+  - Telefone            TEXT
+  - Cep                 TEXT
+  - Rua                 TEXT
+  - Numero              TEXT
+  - Bairro              TEXT
+  - Cidade              TEXT
+  - Uf                  TEXT
+  - Senha               TEXT        hash
+  - SincronizadoApi     INTEGER     0 = não, 1 = sim
+
+  Tabela: PedidoEstoqueLocal
+  ──────────────────────────
+  - Id                  INTEGER     PK, autoincremento
+  - IdPedidoApi         INTEGER     ID retornado pela API (null se não sincronizado)
+  - DataPedido          TEXT        formato ISO 8601
+  - Status              TEXT        status do pedido
+  - SincronizadoApi     INTEGER     0 = não, 1 = sim
+
+  Tabela: ItemPedidoEstoqueLocal
+  ──────────────────────────────
+  - Id                  INTEGER     PK, autoincremento
+  - IdPedidoEstoque     INTEGER     FK para PedidoEstoqueLocal
+  - IdProdutoApi        INTEGER     ID do produto na API
+  - NomeProduto         TEXT
+  - Quantidade          REAL
+  - PrecoUnitario       REAL
+  - Subtotal            REAL
+
+
+4.2. BANCO SERVIDOR - MySQL (API)
+────────────────────────────────────────────────────────────────────────────────
+
+  Banco central que armazena todos os dados do sistema.
+
+  --- TABELAS RELACIONADAS AO APP (Dono/Funcionário - Estoque) ---
+
+  Tabela: empresa
+  ───────────────
+  - id                  INT             PK, auto_increment
+  - razao_social        VARCHAR(200)    NOT NULL
+  - nome_fantasia       VARCHAR(200)
+  - cnpj                VARCHAR(18)     NOT NULL, UNIQUE
+  - email               VARCHAR(200)    NOT NULL, UNIQUE
+  - telefone            VARCHAR(20)
+  - cep                 VARCHAR(10)
+  - rua                 VARCHAR(200)
+  - numero              VARCHAR(20)
+  - bairro              VARCHAR(100)
+  - cidade              VARCHAR(100)
+  - uf                  CHAR(2)
+  - senha_hash          VARCHAR(255)    NOT NULL
+  - data_cadastro       DATETIME        DEFAULT CURRENT_TIMESTAMP
+  - ativo               TINYINT(1)      DEFAULT 1
+
+  Tabela: categorias
+  ───────────────────
+  - id                  INT             PK, auto_increment
+  - nome                VARCHAR(100)    NOT NULL
+  - descricao           TEXT
+  - ativo               TINYINT(1)      DEFAULT 1
+
+  Tabela: produtos
+  ─────────────────
+  - id                  INT             PK, auto_increment
+  - nome                VARCHAR(200)    NOT NULL
+  - descricao           TEXT
+  - preco               DECIMAL(10,2)   NOT NULL
+  - id_categoria        INT             FK -> categorias.id
+  - disponivel          TINYINT(1)      NOT NULL, DEFAULT 1
+  - imagem_url          VARCHAR(500)
+  - estoque             INT             DEFAULT 0
+  - unidade_medida      ENUM('UNIDADE','LITRO','KG')  DEFAULT 'UNIDADE'
+  - data_cadastro       DATETIME        DEFAULT CURRENT_TIMESTAMP
+  - ativo               TINYINT(1)      DEFAULT 1
+
+  Tabela: pedidos_estoque
+  ───────────────────────
+  Pedidos de reposição feitos pelo dono/funcionário via app.
+
+  - id                  INT             PK, auto_increment
+  - id_empresa          INT             FK -> empresa.id, NOT NULL
+  - data_pedido         DATETIME        DEFAULT CURRENT_TIMESTAMP
+  - status              ENUM('PENDENTE','CONFIRMADO','EM_SEPARACAO',
+                              'ENVIADO','ENTREGUE','CANCELADO',
+                              'DEVOLVIDO')
+                                        DEFAULT 'PENDENTE'
+  - prazo_entrega_dias  INT             DEFAULT 3
+  - data_entrega_prev   DATETIME
+  - observacao          TEXT
+  - valor_total         DECIMAL(10,2)
+
+  Tabela: itens_pedido_estoque
+  ────────────────────────────
+  - id                  INT             PK, auto_increment
+  - id_pedido_estoque   INT             FK -> pedidos_estoque.id, NOT NULL
+  - id_produto          INT             FK -> produtos.id, NOT NULL
+  - quantidade          DECIMAL(10,3)   NOT NULL
+  - preco_unitario      DECIMAL(10,2)   NOT NULL
+  - subtotal            DECIMAL(10,2)   NOT NULL
+
+
+  --- TABELAS RELACIONADAS AO SITE (Cliente Final - Encomendas) ---
+
+  Tabela: clientes
+  ─────────────────
+  - id                  INT             PK, auto_increment
+  - nome                VARCHAR(200)    NOT NULL
+  - email               VARCHAR(200)    NOT NULL, UNIQUE
+  - telefone            VARCHAR(20)
+  - tipo_pessoa         ENUM('PF','PJ') NOT NULL
+  - cpf_cnpj            VARCHAR(18)     NOT NULL, UNIQUE
+  - cep                 VARCHAR(10)
+  - rua                 VARCHAR(200)
+  - numero              VARCHAR(20)
+  - bairro              VARCHAR(100)
+  - cidade              VARCHAR(100)
+  - uf                  CHAR(2)
+  - senha_hash          VARCHAR(255)    NOT NULL
+  - data_cadastro       DATETIME        DEFAULT CURRENT_TIMESTAMP
+  - ativo               TINYINT(1)      DEFAULT 1
+
+  Tabela: encomendas
+  ──────────────────
+  Encomendas feitas pelos clientes finais via site.
+
+  - id                  INT             PK, auto_increment
+  - id_cliente          INT             FK -> clientes.id, NOT NULL
+  - data_encomenda      DATETIME        DEFAULT CURRENT_TIMESTAMP
+  - status              ENUM('PENDENTE','CONFIRMADO','EM_SEPARACAO',
+                              'ENVIADO','ENTREGUE','CANCELADO',
+                              'DEVOLVIDO')
+                                        DEFAULT 'PENDENTE'
+  - prazo_entrega_dias  INT             DEFAULT 3
+  - data_entrega_prev   DATETIME
+  - observacao          TEXT
+  - valor_total         DECIMAL(10,2)
+
+  Tabela: itens_encomenda
+  ───────────────────────
+  - id                  INT             PK, auto_increment
+  - id_encomenda        INT             FK -> encomendas.id, NOT NULL
+  - id_produto          INT             FK -> produtos.id, NOT NULL
+  - quantidade          DECIMAL(10,3)   NOT NULL
+  - preco_unitario      DECIMAL(10,2)   NOT NULL
+  - subtotal            DECIMAL(10,2)   NOT NULL
+
+
+================================================================================
+5. REQUISITOS FUNCIONAIS
+================================================================================
+
+--- APP MOBILE (Dono/Funcionário - Reposição de Estoque) ---
+
+RF01 - Cadastro da Empresa
+  O dono/funcionário registra os dados da empresa (razão social, CNPJ,
+  e-mail, telefone, endereço, senha) no app. Os dados são enviados ao
+  webservice e cadastrados no MySQL.
+
+RF02 - Login do Dono/Funcionário
+  Autenticação por e-mail e senha. Se já possui cadastro, é direcionado
+  automaticamente à tela de pedidos de estoque.
+
+RF03 - Consulta de Produtos (Catálogo do Fornecedor)
+  Após o cadastro ser confirmado na API, o app puxa a lista de produtos
+  disponíveis do webservice, exibindo nome, descrição, preço, categoria,
+  imagem, estoque e unidade de medida.
+
+RF04 - Consulta de Categorias
+  O app exibe as categorias de produtos vindas da API para facilitar
+  a navegação no catálogo.
+
+RF05 - Fazer Pedido de Reposição de Estoque
+  O dono/funcionário seleciona produtos do catálogo, define quantidades
+  e confirma o pedido. O pedido é salvo no SQLite local e enviado à API.
+
+RF06 - Armazenamento Local (Offline)
+  O app grava os pedidos localmente no SQLite. Quando houver conexão,
+  os dados são sincronizados com a API.
+
+RF07 - Sincronização com API
+  Dados (cadastro, pedidos) são sincronizados entre SQLite (local) e
+  MySQL (servidor) através da API.
+
+RF08 - Repetir Pedido de Estoque
+  O dono/funcionário pode repetir um pedido anterior. Ao clicar em
+  "Repetir Pedido", os itens são copiados e um novo pedido é enviado
+  automaticamente.
+
+RF09 - Lista de Pedidos de Estoque
+  O app exibe o histórico de pedidos de reposição com status e prazo
+  de entrega.
+
+
+--- SITE WEB (Cliente Final - Encomendas) ---
+
+RF10 - Cadastro de Cliente
+  O site permite o cadastro de pessoa física (CPF) ou pessoa jurídica
+  (CNPJ). Dados obrigatórios: nome, e-mail, telefone, CPF ou CNPJ,
+  endereço completo (CEP, rua, número, bairro, cidade, UF) e senha.
+  Os dados são enviados à API e gravados no MySQL.
+
+RF11 - Login do Cliente
+  Autenticação por e-mail e senha. Se já possui cadastro, é direcionado
+  automaticamente à tela de produtos/encomendas.
+
+RF12 - Catálogo de Produtos da Loja
+  O site exibe a lista de produtos da VanderClean disponíveis para
+  encomenda, com nome, descrição, preço, categoria e imagem.
+
+RF13 - Filtro por Categorias
+  O site permite filtrar os produtos por categoria.
+
+RF14 - Disponibilidade de Produto
+  Produtos com o campo "disponível" marcado como NÃO não aparecem
+  para encomenda no site.
+
+RF15 - Realizar Encomenda
+  O cliente seleciona produtos, define quantidades e confirma a
+  encomenda. O pedido é enviado à API para gravação no MySQL.
+
+RF16 - Repetir Encomenda Anterior
+  O cliente pode repetir uma encomenda já realizada. Ao clicar em
+  "Repetir Pedido", os itens são copiados e uma nova encomenda é
+  enviada automaticamente.
+
+RF17 - Histórico de Encomendas
+  O site exibe a lista de encomendas do cliente com status e prazo
+  de entrega.
+
+
+--- COMUM (App e Site) ---
+
+RF18 - Status do Pedido/Encomenda
+  Cada pedido ou encomenda possui um status que pode ser:
+    - Pendente
+    - Confirmado
+    - Em Separação
+    - Enviado
+    - Entregue
+    - Cancelado
+    - Devolvido
+
+RF19 - Prazo de Entrega
+  O sistema informa o prazo fixo de entrega (padrão: 3 dias úteis)
+  a partir da confirmação do pedido/encomenda.
+
+
+================================================================================
+6. REQUISITOS NÃO FUNCIONAIS
+================================================================================
+
+RNF01 - Segurança
+  Comunicação via HTTPS (TLS). Senhas armazenadas como hash
+  (bcrypt ou SHA-256).
+
+RNF02 - Desempenho
+  A API deve responder em tempo aceitável (< 2 segundos para
+  listagens e operações de pedido).
+
+RNF03 - Portabilidade
+  O app deve funcionar em Android via .NET MAUI.
+  O site deve funcionar nos principais navegadores modernos.
+
+RNF04 - Manutenibilidade
+  Código versionado no Git/GitHub, com separação de responsabilidades.
+
+RNF05 - Disponibilidade
+  A API e o MySQL devem estar hospedados em servidor acessível.
+
+
+================================================================================
+7. REGRAS DE NEGÓCIO
+================================================================================
+
+--- APP MOBILE (Dono/Funcionário) ---
+
+RN01 - Cadastro da Empresa
+  O cadastro da empresa é feito pelo dono/funcionário no app. Após
+  enviar ao webservice e ser confirmado, o app puxa o catálogo de
+  produtos do fornecedor.
+
+RN02 - CNPJ Único
+  Não é permitido mais de um cadastro de empresa com o mesmo CNPJ.
+
+RN03 - Acesso Direto ao Catálogo
+  Se a empresa já está cadastrada e o usuário está autenticado, o app
+  redireciona automaticamente à tela de pedidos, sem passar pelo
+  cadastro novamente.
+
+RN04 - Pedido de Estoque
+  O dono/funcionário faz pedidos de reposição de produtos para o
+  estoque da loja. Esses pedidos são direcionados ao fornecedor
+  via API.
+
+RN05 - Repetir Pedido de Estoque
+  Ao repetir, o sistema verifica se os produtos do pedido original
+  ainda estão disponíveis. Se algum não estiver, o pedido não é
+  gerado e o usuário é notificado.
+
+RN06 - Sincronização Obrigatória
+  Pedidos gravados no SQLite devem ser enviados à API assim que
+  houver conexão. Dados não sincronizados são mantidos localmente
+  até confirmação.
+
+--- SITE WEB (Cliente Final) ---
+
+RN07 - Tipo de Pessoa
+  O cliente escolhe se é Pessoa Física (CPF) ou Pessoa Jurídica
+  (CNPJ). O campo CPF/CNPJ é validado conforme o tipo.
+
+RN08 - Cadastro Único de Cliente
+  Não é permitido mais de um cadastro com o mesmo CPF/CNPJ ou e-mail.
+
+RN09 - Acesso Direto a Encomendas
+  Se o cliente já possui cadastro e está autenticado, o site
+  redireciona automaticamente à tela de produtos/encomendas.
+
+RN10 - Produto Indisponível
+  Produtos com "disponível" = NÃO não podem ser encomendados e
+  não aparecem na listagem do site.
+
+RN11 - Estoque
+  A quantidade encomendada deve respeitar o estoque disponível.
+
+RN12 - Repetir Encomenda
+  Ao repetir, o sistema verifica disponibilidade e estoque dos
+  produtos do pedido original. Se algum não estiver disponível,
+  a encomenda não é gerada e o cliente é notificado.
+
+--- COMUM ---
+
+RN13 - Prazo de Entrega Fixo
+  Todo pedido/encomenda tem prazo fixo de entrega (padrão: 3 dias
+  úteis) a partir da data de confirmação.
+
+RN14 - Fluxo de Status
+  O status segue a ordem:
+    Pendente → Confirmado → Em Separação → Enviado → Entregue
+  Cancelamento possível a qualquer momento antes de "Enviado".
+  "Devolvido" só pode ser aplicado após "Entregue".
+
+RN15 - Sem Pagamento
+  O sistema apenas registra pedidos e encomendas. Pagamento está fora do escopo do sistema.
+
+
+================================================================================
+8. FLUXOS DO SISTEMA
+================================================================================
+
+8.1. FLUXO - APP: CADASTRO DA EMPRESA (Primeiro Acesso)
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Dono/funcionário abre o app pela primeira vez.
+  2. Tela de Login é exibida. Toca em "Registrar Empresa".
+  3. Preenche: razão social, nome fantasia, CNPJ, e-mail, telefone,
+     endereço completo, senha.
+  4. Sistema valida CNPJ e dados obrigatórios.
+  5. Dados são salvos no SQLite local.
+  6. Dados são enviados à API via HTTPS.
+  7. API grava no MySQL e retorna confirmação.
+  8. SQLite é atualizado com flag "sincronizado".
+  9. App puxa catálogo de produtos do fornecedor via API.
+  10. Usuário é redirecionado à tela de Pedidos de Estoque.
+
+8.2. FLUXO - APP: PEDIDO DE REPOSIÇÃO DE ESTOQUE
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Dono/funcionário faz login no app.
+  2. É redirecionado à tela de catálogo de produtos.
+  3. Navega por categorias e seleciona produtos para reposição.
+  4. Define as quantidades desejadas.
+  5. Sistema valida disponibilidade dos produtos.
+  6. Confirma o pedido de estoque.
+  7. Pedido é salvo no SQLite local.
+  8. Pedido é enviado à API via HTTPS.
+  9. API grava no MySQL com status "Pendente".
+  10. API retorna confirmação com ID do pedido e prazo de entrega.
+  11. Pedido aparece na lista com status e prazo.
+
+8.3. FLUXO - APP: REPETIR PEDIDO DE ESTOQUE
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Dono/funcionário acessa o Histórico de Pedidos de Estoque.
+  2. Seleciona um pedido anterior.
+  3. Toca em "Repetir Pedido".
+  4. Sistema verifica se todos os produtos estão disponíveis.
+  5. Se OK → novo pedido é criado e enviado automaticamente.
+  6. Se algum produto indisponível → usuário é notificado.
+
+8.4. FLUXO - SITE: CADASTRO DO CLIENTE (Primeiro Acesso)
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Cliente acessa o site pela primeira vez.
+  2. Página de Login é exibida. Clica em "Criar Conta".
+  3. Escolhe: Pessoa Física ou Pessoa Jurídica.
+  4. Preenche: nome, e-mail, telefone, CPF ou CNPJ, endereço
+     completo (CEP, rua, número, bairro, cidade, UF), senha.
+  5. Sistema valida CPF/CNPJ e dados obrigatórios.
+  6. Dados são enviados à API via HTTPS.
+  7. API grava no MySQL e retorna confirmação.
+  8. Cliente é redirecionado à página de Produtos.
+
+8.5. FLUXO - SITE: ENCOMENDA DO CLIENTE
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Cliente faz login no site.
+  2. É redirecionado à página de Produtos da loja.
+  3. Pode filtrar por categoria.
+  4. Seleciona produtos e define quantidades.
+  5. Sistema valida disponibilidade e estoque.
+  6. Cliente confirma a encomenda.
+  7. Encomenda é enviada à API via HTTPS.
+  8. API grava no MySQL com status "Pendente".
+  9. API retorna confirmação com ID da encomenda e prazo de entrega.
+  10. Encomenda aparece no histórico com status e prazo.
+
+8.6. FLUXO - SITE: REPETIR ENCOMENDA
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Cliente acessa o Histórico de Encomendas.
+  2. Seleciona uma encomenda anterior.
+  3. Clica em "Repetir Pedido".
+  4. Sistema verifica disponibilidade e estoque dos produtos.
+  5. Se OK → nova encomenda é criada e enviada automaticamente.
+  6. Se algum produto indisponível → cliente é notificado.
+
+8.7. FLUXO - ATUALIZAÇÃO DE STATUS (Administração)
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Administrador da VanderClean atualiza o status via acesso ao
+     banco/API.
+  2. Status válidos: Pendente → Confirmado → Em Separação → Enviado →
+     Entregue.
+  3. Cancelamento possível antes de "Enviado".
+  4. Devolução possível após "Entregue".
+  5. Dono/funcionário (app) ou cliente (site) visualiza o status
+     atualizado.
+
+
+================================================================================
+9. ATRIBUTOS DAS ENTIDADES (RESUMO)
+================================================================================
+
+9.1. EMPRESA (cadastro do dono/funcionário no app)
+  - ID
+  - Razão Social
+  - Nome Fantasia
+  - CNPJ (único, validado)
+  - E-mail (único)
+  - Telefone
+  - Endereço: CEP, Rua, Número, Bairro, Cidade, UF
+  - Senha (hash)
+  - Data de cadastro
+  - Ativo (sim/não)
+
+9.2. CLIENTE (cadastro do cliente final no site)
+  - ID
+  - Nome completo
+  - E-mail (único)
+  - Telefone
+  - Tipo de pessoa (PF / PJ)
+  - CPF ou CNPJ (único, validado)
+  - Endereço: CEP, Rua, Número, Bairro, Cidade, UF
+  - Senha (hash)
+  - Data de cadastro
+  - Ativo (sim/não)
+
+9.3. CATEGORIA
+  - ID
+  - Nome
+  - Descrição
+  - Ativo (sim/não)
+
+9.4. PRODUTO
+  - ID
+  - Nome
+  - Descrição
+  - Preço
+  - Categoria (FK)
+  - Disponível (sim/não)
+  - URL da imagem
+  - Estoque (quantidade)
+  - Unidade de medida (unidade, litro, kg)
+  - Data de cadastro
+  - Ativo (sim/não)
+
+9.5. PEDIDO DE ESTOQUE (feito pelo dono/funcionário via app)
+  - ID
+  - Empresa (FK)
+  - Data do pedido
+  - Status
+  - Prazo de entrega (dias)
+  - Data prevista de entrega
+  - Observação
+  - Valor total
+
+9.6. ITEM DO PEDIDO DE ESTOQUE
+  - ID
+  - Pedido de Estoque (FK)
+  - Produto (FK)
+  - Quantidade
+  - Preço unitário
+  - Subtotal
+
+9.7. ENCOMENDA (feita pelo cliente final via site)
+  - ID
+  - Cliente (FK)
+  - Data da encomenda
+  - Status
+  - Prazo de entrega (dias)
+  - Data prevista de entrega
+  - Observação
+  - Valor total
+
+9.8. ITEM DA ENCOMENDA
+  - ID
+  - Encomenda (FK)
+  - Produto (FK)
+  - Quantidade
+  - Preço unitário
+  - Subtotal
+
+
+================================================================================
+10. ESPECIFICAÇÃO POR PLATAFORMA
+================================================================================
+
+10.1. SHOPVANDER APP (Aplicativo Mobile - .NET MAUI)
+     Público: DONO / FUNCIONÁRIO da VanderClean
+────────────────────────────────────────────────────────────────────────────────
+
+  Objetivo: Aplicativo mobile para o dono ou funcionário da VanderClean
+  fazer pedidos de reposição de estoque junto ao fornecedor.
+
+  Tecnologias:
+    - C# / .NET MAUI
+    - SQLite (banco local)
+    - Consumo de API REST via HttpClient
+    - Visual Studio Code
+
+  Telas:
+    1. Login - e-mail e senha, botão "Registrar Empresa"
+    2. Cadastro da Empresa - CNPJ, razão social, endereço, etc.
+    3. Catálogo de Produtos - lista de produtos do fornecedor com
+       filtro por categoria
+    4. Detalhes do Produto - informações completas do produto
+    5. Carrinho / Confirmar Pedido - itens selecionados para reposição
+    6. Meus Pedidos de Estoque - histórico com status e prazo
+    7. Detalhes do Pedido - itens, valores, status, botão
+       "Repetir Pedido"
+
+  Funcionalidades Específicas:
+    - Armazenamento offline via SQLite
+    - Sincronização automática com API ao reconectar
+    - Cache local de produtos para navegação offline
+    - Função "Repetir Pedido" com envio automático
+
+
+10.2. SHOPVANDER WEB (Site / Loja na Web)
+     Público: CLIENTE FINAL
+────────────────────────────────────────────────────────────────────────────────
+
+  Objetivo: Site para o cliente final se cadastrar, navegar pelos
+  produtos de limpeza da VanderClean e realizar encomendas.
+
+  Tecnologias:
+    - Frontend web (Blazor, ou HTML/CSS/JS com framework)
+    - Consumo da mesma API REST
+    - Visual Studio Code
+
+  Páginas:
+    1. Login - e-mail e senha, link "Criar Conta"
+    2. Cadastro do Cliente - opção PF ou PJ, CPF/CNPJ, dados pessoais,
+       endereço, senha
+    3. Catálogo de Produtos - listagem dos produtos da loja com filtro
+       por categoria
+    4. Detalhes do Produto - informações completas
+    5. Carrinho / Confirmar Encomenda - itens selecionados
+    6. Minhas Encomendas - histórico com status e prazo de entrega
+    7. Detalhes da Encomenda - itens, valores, status, botão
+       "Repetir Pedido"
+
+  Funcionalidades Específicas:
+    - Design responsivo (desktop e mobile)
+    - Navegação por categorias
+    - Não possui armazenamento local (depende totalmente da API)
+    - Função "Repetir Pedido" com envio automático
+
+
+10.3. API REST (Backend - ASP.NET Core)
+────────────────────────────────────────────────────────────────────────────────
+
+  Objetivo: Centralizar toda a lógica de negócio, gerenciar o banco
+  MySQL, e servir dados para o app e o site.
+
+  Tecnologias:
+    - C# / ASP.NET Core Web API
+    - MySQL (Entity Framework Core ou Dapper)
+    - Visual Studio Code
+    - HTTPS (TLS)
+
+  Endpoints Principais:
+
+  -- Empresa (App - Dono/Funcionário) --
+    POST   /api/empresa/registrar         → Cadastrar empresa
+    POST   /api/empresa/login             → Autenticar dono/funcionário
+
+  -- Produtos e Categorias (Comum) --
+    GET    /api/produtos                  → Listar produtos disponíveis
+    GET    /api/produtos/{id}             → Detalhes de um produto
+    GET    /api/categorias                → Listar categorias
+
+  -- Pedidos de Estoque (App) --
+    POST   /api/pedidos-estoque           → Criar pedido de reposição
+    GET    /api/pedidos-estoque/{idEmp}   → Listar pedidos de uma empresa
+    GET    /api/pedidos-estoque/{id}      → Detalhes de um pedido
+    POST   /api/pedidos-estoque/{id}/repetir → Repetir pedido de estoque
+    PATCH  /api/pedidos-estoque/{id}/status  → Atualizar status
+
+  -- Clientes (Site) --
+    POST   /api/clientes/registrar        → Cadastrar cliente (PF/PJ)
+    POST   /api/clientes/login            → Autenticar cliente
+
+  -- Encomendas (Site) --
+    POST   /api/encomendas                → Criar encomenda
+    GET    /api/encomendas/cliente/{id}    → Listar encomendas de um cliente
+    GET    /api/encomendas/{id}           → Detalhes de uma encomenda
+    POST   /api/encomendas/{id}/repetir   → Repetir encomenda
+    PATCH  /api/encomendas/{id}/status    → Atualizar status
+
+
+================================================================================
+11. SEGURANÇA E CRIPTOGRAFIA
+================================================================================
+
+  - Toda comunicação entre clientes (app/site) e API utiliza HTTPS
+    (TLS), garantindo criptografia em trânsito.
+  - Senhas nunca são armazenadas em texto puro. São convertidas para
+    hash utilizando bcrypt ou SHA-256 antes de serem gravadas.
+  - CPF/CNPJ são dados sensíveis e devem ser tratados conforme a
+    LGPD (Lei Geral de Proteção de Dados).
+
+
+================================================================================
+12. DOCUMENTAÇÃO DO DESENVOLVIMENTO
+================================================================================
+
+  - O desenvolvimento será auxiliado pela ferramenta Gemini integrada
+    ao Visual Studio Code.
+  - Os prompts utilizados durante o desenvolvimento serão documentados
+    como parte do registro do processo de criação.
+  - Controle de versão via Git/GitHub.
+  - Projeto acadêmico desenvolvido como trabalho de faculdade.
+
+
+================================================================================
+                          FIM DA ESPECIFICAÇÃO
+================================================================================

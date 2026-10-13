@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VanderClean.App.Views.NovoPedidoPage"
+             Title="Novo Pedido de Reposição"
+             BackgroundColor="#0f172a">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        
+        <!-- Filtro por Categoria -->
+        <Border Grid.Row="0"
+                BackgroundColor="#1e293b"
+                Stroke="#334155"
+                StrokeThickness="1"
+                Padding="10"
+                Margin="10,5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="8" />
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Filtrar por Categoria:" TextColor="#94a3b8" FontSize="12" />
+                <Picker x:Name="CategoriaPicker"
+                        Title="Todas as Categorias"
+                        TextColor="White"
+                        TitleColor="#64748b"
+                        BackgroundColor="#0f172a"
+                        ItemDisplayBinding="{Binding Nome}"
+                        SelectedIndexChanged="OnCategoriaChanged" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Catálogo de Produtos com Seletores de Quantidade -->
+        <CollectionView Grid.Row="1"
+                        x:Name="ProdutosCollectionView"
+                        SelectionMode="None"
+                        Margin="10,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="#1e293b"
+                            Stroke="#334155"
+                            StrokeThickness="1"
+                            Margin="0,4"
+                            Padding="12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                            
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
+                                <Label Text="{Binding Produto.Nome}"
+                                       TextColor="White"
+                                       FontAttributes="Bold"
+                                       FontSize="15" />
+                                <Label Text="{Binding Produto.Descricao}"
+                                       TextColor="#94a3b8"
+                                       FontSize="12"
+                                       MaxLines="2" />
+                                <Label Text="{Binding Produto.Preco, StringFormat='R$ {0:F2}'}"
+                                       TextColor="#38bdf8"
+                                       FontAttributes="Bold"
+                                       FontSize="14" />
+                            </VerticalStackLayout>
+
+                            <!-- Controles de Quantidade +/- -->
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                <Button Text="-"
+                                        BackgroundColor="#334155"
+                                        TextColor="White"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="18"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnDiminuirQtdClicked" />
+
+                                <Label Text="{Binding Quantidade}"
+                                       TextColor="White"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"
+                                       WidthRequest="30" />
+
+                                <Button Text="+"
+                                        BackgroundColor="#0284c7"
+                                        TextColor="White"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="18"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnAumentarQtdClicked" />
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Rodapé com Total e Botão de Finalizar Pedido -->
+        <Border Grid.Row="2"
+                BackgroundColor="#1e293b"
+                Stroke="#334155"
+                StrokeThickness="1"
+                Padding="15"
+                Margin="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0" />
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0">
+                    <Label Text="Total Estimado:" TextColor="#94a3b8" FontSize="12" />
+                    <Label x:Name="TotalLabel"
+                           Text="R$ 0,00"
+                           TextColor="#4ade80"
+                           FontAttributes="Bold"
+                           FontSize="20" />
+                </VerticalStackLayout>
+
+                <Button Grid.Column="1"
+                        x:Name="BtnConfirmar"
+                        Text="CONFIRMAR PEDIDO"
+                        BackgroundColor="#16a34a"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        CornerRadius="8"
+                        HeightRequest="48"
+                        Clicked="OnConfirmarPedidoClicked" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

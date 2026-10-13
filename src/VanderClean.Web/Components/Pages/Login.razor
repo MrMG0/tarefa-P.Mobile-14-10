@@ -1,0 +1,169 @@
+@page "/login"
+@rendermode InteractiveServer
+@inject WebApiService Api
+@inject WebSessionState Session
+@inject NavigationManager Nav
+
+<PageTitle>Login / Cadastro - ShopVander</PageTitle>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <ul class="nav nav-pills nav-justified mb-4" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link @(abaLogin ? "active" : "")" @onclick="() => abaLogin = true">Já sou Cliente</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link @(!abaLogin ? "active" : "")" @onclick="() => abaLogin = false">Criar Conta</button>
+                        </li>
+                    </ul>
+
+                    @if (erro != null)
+                    {
+                        <div class="alert alert-danger">@erro</div>
+                    }
+
+                    @if (abaLogin)
+                    {
+                        <form @onsubmit="FazerLogin">
+                            <div class="mb-3">
+                                <label class="form-label">E-mail</label>
+                                <input type="email" class="form-control" @bind="emailLogin" placeholder="seu@email.com" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Senha</label>
+                                <input type="password" class="form-control" @bind="senhaLogin" placeholder="Sua senha" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" disabled="@processando">
+                                @(processando ? "Entrando..." : "Entrar")
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form @onsubmit="Cadastrar">
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de Pessoa</label>
+                                <select class="form-select" @bind="tipoPessoa">
+                                    <option value="PF">Pessoa Física (CPF)</option>
+                                    <option value="PJ">Pessoa Jurídica (CNPJ)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nome Completo / Razão Social</label>
+                                <input type="text" class="form-control" @bind="nomeReg" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">@(tipoPessoa == "PF" ? "CPF" : "CNPJ")</label>
+                                <input type="text" class="form-control" @bind="cpfCnpjReg" placeholder="@(tipoPessoa == "PF" ? "000.000.000-00" : "00.000.000/0000-00")" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">E-mail</label>
+                                <input type="email" class="form-control" @bind="emailReg" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Telefone</label>
+                                <input type="text" class="form-control" @bind="telefoneReg" />
+                            </div>
+                            <div class="row">
+                                <div class="col-8 mb-3">
+                                    <label class="form-label">Cidade</label>
+                                    <input type="text" class="form-control" @bind="cidadeReg" />
+                                </div>
+                                <div class="col-4 mb-3">
+                                    <label class="form-label">UF</label>
+                                    <input type="text" class="form-control" @bind="ufReg" maxlength="2" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Senha</label>
+                                <input type="password" class="form-control" @bind="senhaReg" required />
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold" disabled="@processando">
+                                @(processando ? "Cadastrando..." : "Cadastrar e Continuar")
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool abaLogin = true;
+    private bool processando = false;
+    private string? erro;
+
+    private string emailLogin = "";
+    private string senhaLogin = "";
+
+    private string tipoPessoa = "PF";
+    private string nomeReg = "";
+    private string cpfCnpjReg = "";
+    private string emailReg = "";
+    private string telefoneReg = "";
+    private string cidadeReg = "";
+    private string ufReg = "";
+    private string senhaReg = "";
+
+    private async Task FazerLogin()
+    {
+        processando = true;
+        erro = null;
+        var res = await Api.LoginClienteAsync(emailLogin, senhaLogin);
+        if (res.Sucesso && res.ClienteId.HasValue)
+        {
+            Session.ClienteId = res.ClienteId.Value;
+            Session.ClienteNome = res.Nome;
+            Nav.NavigateTo("/");
+        }
+        else
+        {
+            erro = res.Mensagem;
+        }
+        processando = false;
+    }
+
+    private async Task Cadastrar()
+    {
+        processando = true;
+        erro = null;
+
+        var dto = new ClienteRegistroDto
+        {
+            Nome = nomeReg,
+            Email = emailReg,
+            TipoPessoa = tipoPessoa == "PJ" ? TipoPessoa.PJ : TipoPessoa.PF,
+            CpfCnpj = cpfCnpjReg,
+            Telefone = telefoneReg,
+            Cidade = cidadeReg,
+            Uf = ufReg,
+            Senha = senhaReg
+        };
+
+        var res = await Api.RegistrarClienteAsync(dto);
+        if (res.Sucesso)
+        {
+            // Auto login
+            var loginRes = await Api.LoginClienteAsync(emailReg, senhaReg);
+            if (loginRes.Sucesso && loginRes.ClienteId.HasValue)
+            {
+                Session.ClienteId = loginRes.ClienteId.Value;
+                Session.ClienteNome = loginRes.Nome;
+                Nav.NavigateTo("/");
+            }
+            else
+            {
+                abaLogin = true;
+            }
+        }
+        else
+        {
+            erro = res.Mensagem;
+        }
+        processando = false;
+    }
+}
