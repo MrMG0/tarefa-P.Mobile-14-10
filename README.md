@@ -22,6 +22,18 @@ dotnet run --project src/VanderClean.Api/VanderClean.Api.csproj --urls "http://l
 Acesse a documentação interativa e faça testes de todos os endpoints via Swagger:
 👉 **http://localhost:5000**
 
+---
+
+## 🌐 Como Executar o Site Web
+
+Na raiz do projeto:
+
+```bash
+dotnet run --project src/VanderClean.Web/VanderClean.Web.csproj --urls "http://localhost:5001"
+```
+
+Acesse o site em **http://localhost:5001**. Mantenha a API em execução para que o site possa carregar o catálogo e acessar os pedidos.
+
 ### Usuário de Teste Padrão (Seed Automático):
 - **E-mail:** `contato@vanderclean.com.br`
 - **Senha:** `123456`

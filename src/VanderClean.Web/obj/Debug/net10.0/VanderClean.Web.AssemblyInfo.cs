@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VanderClean.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d95e3855ab9068e27867a6c704dded7b9388d1ac")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3772959142a9a5c7e7d476d0ad9342d3bfc43839")]
 [assembly: System.Reflection.AssemblyProductAttribute("VanderClean.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VanderClean.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
